@@ -1,0 +1,33 @@
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+out/
+.out/
+out/
+build/
+.idea/
+.gradle/
+captures/
+
+
+#iml files
+*.iml
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# linux files
+.directory
+*.*~
+
+# mac files
+.DS_Store
+
+Thumbs.db
+thumbs.db
+
+outputs/mapping.txt
+artwork/

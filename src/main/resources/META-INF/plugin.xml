@@ -1,0 +1,46 @@
+<idea-plugin>
+    <id>cz.ackee.localizer</id>
+    <name>Spreadsheet Localizer</name>
+    <version>0.9.5</version>
+    <vendor email="info@ackee.cz" url="http://www.ackee.cz">Ackee</vendor>
+
+    <description><![CDATA[
+      Plugin for generating string resources for different localizations from Google sheets.
+    ]]></description>
+
+    <change-notes><![CDATA[
+      0.9.5: Autorefresh of files, more eyes-friendly icon
+
+      0.9.0: Alpha release.
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="162"/>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+        <projectService
+                serviceInterface="cz.ackee.localizer.settings.LocalizerSettings"
+                serviceImplementation="cz.ackee.localizer.settings.LocalizerSettings"/>
+
+        <projectConfigurable
+                instance="cz.ackee.localizer.settings.LocalizerConfigurable"
+                id="settings.localizer.add"
+                parentId="Settings"
+                order="last"/>
+
+    </extensions>
+
+    <actions>
+        <action id="LoadLocalization" class="cz.ackee.localizer.action.LoadLocalizationAction" text="Load localization strings"
+                description="Loads localization strings from the specified Google sheet" icon="Icons.LOCALIZE_ACTION_ICON">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift L"/>
+            <add-to-group group-id="MainToolBar" anchor="after" relative-to-action="HelpMenu"/>
+        </action>
+    </actions>
+</idea-plugin>
