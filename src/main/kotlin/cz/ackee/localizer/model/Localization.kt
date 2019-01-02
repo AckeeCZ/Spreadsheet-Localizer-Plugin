@@ -7,7 +7,7 @@ package cz.ackee.localizer.model
 data class Localization(val resources: List<Resource>) {
 
     companion object {
-        val DEFAULT_LANGUAGES = listOf("cz", "cs", "en", "de", "sk", "pl", "es", "it", "ru", "hu")
+        val DEFAULT_LANGUAGES = listOf("cz", "cs", "en", "de", "sk", "pl", "es", "it", "ru", "hu", "fr", "cn")
 
         fun fromGoogleResponse(response: GoogleSheetResponse,
                                languages: List<String> = DEFAULT_LANGUAGES): Localization {
