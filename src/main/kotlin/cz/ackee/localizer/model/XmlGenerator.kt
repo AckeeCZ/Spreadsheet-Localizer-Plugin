@@ -73,5 +73,6 @@ class XmlGenerator(val resPath: String, val defaultLang: String = "en") {
     private fun String.format() =
             this
                     .replace("'", "\\'")
+                    .replace("\"", "&quot;")
                     .replace("&(?!.{2,4};)".toRegex(), "&amp;")
 }
