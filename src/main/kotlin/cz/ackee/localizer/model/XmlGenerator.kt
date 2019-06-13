@@ -39,27 +39,34 @@ class XmlGenerator(val resPath: String, val defaultLang: String = "en") {
                         append("<!-- ${entry.name} -->")
                     }
                     is Localization.Resource.Entry.Key -> {
-                        appendln()
-                        append(INDENT)
-                        append("<string name=\"${entry.key}\">")
-                        append(entry.value.format())
-                        append("</string>")
-                    }
-                    is Localization.Resource.Entry.Plural -> {
-                        appendln()
-                        append(INDENT)
-                        append("<plurals name=\"${entry.key}\">")
-                        entry.values.forEach { key, value ->
+                        // do not insert empty texts
+                        if (entry.value.format().isNotEmpty()) {
                             appendln()
                             append(INDENT)
-                            append(INDENT)
-                            append("<item quantity=\"$key\">")
-                            append(value.format())
-                            append("</item>")
+                            append("<string name=\"${entry.key}\">")
+                            append(entry.value.format())
+                            append("</string>")
                         }
-                        appendln()
-                        append(INDENT)
-                        append("</plurals>")
+                    }
+                    is Localization.Resource.Entry.Plural -> {
+                        if (entry.values.any { it.value.isNotEmpty() }) {
+                            appendln()
+                            append(INDENT)
+                            append("<plurals name=\"${entry.key}\">")
+                            entry.values.forEach { key, value ->
+                                if (value.isNotEmpty()) {
+                                    appendln()
+                                    append(INDENT)
+                                    append(INDENT)
+                                    append("<item quantity=\"$key\">")
+                                    append(value.format())
+                                    append("</item>")
+                                }
+                            }
+                            appendln()
+                            append(INDENT)
+                            append("</plurals>")
+                        }
                     }
                 }
             }
