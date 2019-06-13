@@ -11,11 +11,20 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 @State(name = "LocalizerSettings", storages = arrayOf(Storage("localizerSettings.xml")))
 class LocalizerSettings : PersistentStateComponent<LocalizerSettings> {
 
-    var apiKey: String = ""
-    var sheetId: String = ""
-    var sheetName: String = ""
-    var defaultLang: String = "en"
-    var resPath: String = ""
+    var projects: List<ProjectSettings> = emptyList()
+    var selectedProject: Int = 0
+
+    val currentProject
+        get() = projects.getOrNull(selectedProject)
+
+    data class ProjectSettings(
+            var projectName: String = "",
+            var apiKey: String = "",
+            var sheetId: String = "",
+            var sheetName: String = "",
+            var defaultLang: String = "en",
+            var resPath: String = ""
+    )
 
     override fun getState(): LocalizerSettings {
         return this

@@ -28,12 +28,6 @@
                 serviceInterface="cz.ackee.localizer.settings.LocalizerSettings"
                 serviceImplementation="cz.ackee.localizer.settings.LocalizerSettings"/>
 
-        <projectConfigurable
-                instance="cz.ackee.localizer.settings.LocalizerConfigurable"
-                id="settings.localizer.add"
-                parentId="Settings"
-                order="last"/>
-
     </extensions>
 
     <actions>

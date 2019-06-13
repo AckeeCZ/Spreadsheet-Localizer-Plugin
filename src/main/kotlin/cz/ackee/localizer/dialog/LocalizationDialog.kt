@@ -8,9 +8,7 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import cz.ackee.localizer.settings.LocalizerSettings
 import java.io.File
-import javax.swing.JComponent
-import javax.swing.JPanel
-import javax.swing.JTextField
+import javax.swing.*
 
 /**
  * Dialog that collects the Google Sheet information
@@ -19,7 +17,9 @@ class LocalizationDialog(project: Project,
                          val listener: (String, String, String, String, String) -> Unit) : DialogWrapper(project) {
 
     private lateinit var uiContainer: JPanel
+    private lateinit var projectComboBox: JComboBox<String>
     private lateinit var editApiKey: JTextField
+    private lateinit var editProjectName: JTextField
     private lateinit var editId: JTextField
     private lateinit var editSheetName: JTextField
     private lateinit var editDefaultLang: JTextField
@@ -29,12 +29,8 @@ class LocalizationDialog(project: Project,
     init {
         init()
         pack()
-
-        editApiKey.text = settings.apiKey
-        editId.text = settings.sheetId
-        editSheetName.text = settings.sheetName
-        editDefaultLang.text = settings.defaultLang
-        editPath.text = settings.resPath
+        val currentSettings = settings.currentProject
+        bindProjectSettings(currentSettings)
 
         editPath.addBrowseFolderListener(
                 "Choose path",
@@ -42,6 +38,20 @@ class LocalizationDialog(project: Project,
                 project,
                 FileChooserDescriptorFactory.createSingleFolderDescriptor()
         )
+        projectComboBox.model = DefaultComboBoxModel(settings.projects.map { it.projectName }.toTypedArray() + "New project")
+        projectComboBox.selectedIndex = settings.selectedProject
+        projectComboBox.addItemListener {
+            bindProjectSettings(settings.projects.getOrNull(projectComboBox.selectedIndex))
+        }
+    }
+
+    private fun bindProjectSettings(currentSettings: LocalizerSettings.ProjectSettings?) {
+        editProjectName.text = currentSettings?.projectName ?: ""
+        editApiKey.text = currentSettings?.apiKey ?: ""
+        editId.text = currentSettings?.sheetId ?: ""
+        editSheetName.text = currentSettings?.sheetName ?: ""
+        editDefaultLang.text = currentSettings?.defaultLang ?: ""
+        editPath.text = currentSettings?.resPath ?: ""
     }
 
     override fun createCenterPanel(): JComponent {
@@ -72,11 +82,18 @@ class LocalizationDialog(project: Project,
             return
         }
 
-        settings.apiKey = apiKey
-        settings.sheetId = id
-        settings.sheetName = sheetName
-        settings.defaultLang = defaultLang
-        settings.resPath = path
+        settings.selectedProject = projectComboBox.selectedIndex
+
+        val currentSettings = settings.currentProject ?: LocalizerSettings.ProjectSettings()
+        currentSettings.projectName = if (editProjectName.text.isNullOrEmpty()) "Default" else editProjectName.text
+        currentSettings.apiKey = apiKey
+        currentSettings.sheetId = id
+        currentSettings.sheetName = sheetName
+        currentSettings.defaultLang = defaultLang
+        currentSettings.resPath = path
+        if (projectComboBox.selectedIndex > settings.projects.lastIndex) {
+            settings.projects += currentSettings
+        }
         super.doOKAction()
         listener.invoke(apiKey, id, sheetName, defaultLang, path)
     }
