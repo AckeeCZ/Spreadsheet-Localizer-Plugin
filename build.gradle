@@ -39,7 +39,7 @@ publishPlugin {
 }
 
 patchPluginXml {
-    changeNotes = "Add French and Chinese languages"
+    changeNotes = "Add support for multiple projects, do not generate empty strings"
 }
 
 
