@@ -1,5 +1,5 @@
 group 'cz.ackee.localizer'
-version '0.9.7'
+version '0.9.8'
 
 buildscript {
     ext.kotlin_version = '1.2.70'
