@@ -1,5 +1,5 @@
 group 'cz.ackee.localizer'
-version '0.9.8'
+version '0.9.9'
 
 buildscript {
     ext.kotlin_version = '1.2.70'
@@ -39,7 +39,7 @@ publishPlugin {
 }
 
 patchPluginXml {
-    changeNotes = "Add support for multiple projects, do not generate empty strings"
+    changeNotes = "Add support for all languages"
 }
 
 
