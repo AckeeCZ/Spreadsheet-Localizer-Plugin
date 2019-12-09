@@ -1,9 +1,9 @@
 import cz.ackee.localizer.model.Localization
 import cz.ackee.localizer.model.XmlGenerator
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.io.File
-import org.junit.Assert.assertEquals
 
 /**
  * Test for resource generator. Tests if the generated input is valid from provided [Localization].
@@ -108,7 +108,7 @@ class ResourceGeneratorTest {
 
     @Test
     fun shouldGenerateProperHtml() {
-        val html = "<![CDATA[Jsem politicky exponovaná osoba<br /><a href=\"https://zonky.cz\">Co to znamená?</a>]]>"
+        val html = """<![CDATA[Jsem politicky exponovaná osoba<br /><a href=\"https://zonky.cz\">Co to znamená?</a>]]>"""
         val localization = Localization(
                 listOf(
                         Localization.Resource("en", listOf(
