@@ -11,7 +11,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.4.14"
+        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.4.15"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath group: 'com.sun.xml.messaging.saaj', name: 'saaj-impl', version: '1.3'
     }
@@ -29,7 +29,7 @@ repositories {
 
 intellij {
     pluginName 'SpreadsheetLocalizer'
-    version '2019.2'
+    version '2019.1'
 }
 
 publishPlugin {
