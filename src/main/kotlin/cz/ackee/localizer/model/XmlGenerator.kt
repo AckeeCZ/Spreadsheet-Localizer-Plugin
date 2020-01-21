@@ -30,7 +30,7 @@ class XmlGenerator(val resPath: String, val defaultLang: String = "en") {
             resource.entries.forEachIndexed { index, entry ->
                 when (entry) {
                     is Localization.Resource.Entry.Section -> {
-                        if (index > resource.entries.lastIndex || resource.entries[index + 1] is Localization.Resource.Entry.Section) {
+                        if (index == resource.entries.lastIndex || resource.entries[index + 1] is Localization.Resource.Entry.Section) {
                             return@forEachIndexed
                         }
                         appendln()
