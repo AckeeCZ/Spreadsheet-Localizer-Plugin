@@ -1,5 +1,6 @@
 import cz.ackee.localizer.model.Localization
 import cz.ackee.localizer.model.XmlGenerator
+import org.intellij.lang.annotations.Language
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -125,7 +126,7 @@ class ResourceGeneratorTest {
 
     @Test
     fun shouldHandleSymbolsProperly() {
-        val string = "If you don't want to mess with George & his gang, pay your &gt;25% each month through B&B"
+        val string = """If you don't want to mess \ahoj with George & his gang, pay your &gt;25% each month through B&B"""
         val localization = Localization(
                 listOf(
                         Localization.Resource("en", listOf(
@@ -135,8 +136,39 @@ class ResourceGeneratorTest {
         )
         resourceGenerator.createResourcesForLocalization(localization)
         assertEquals(
-                "If you don\\'t want to mess with George &amp; his gang, pay your &gt;25% each month through B&amp;B",
+                "If you don\\'t want to mess \\ahoj with George &amp; his gang, pay your &gt;25% each month through B&amp;B",
                 File("test/values/strings.xml").readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
+        )
+    }
+
+    /**
+     * This case caused a lot of bugs - last section did not have any keys in it
+     */
+    @Test
+    fun `should generate empty last section`() {
+        val localization = Localization(listOf(Localization.Resource(
+                suffix = "en",
+                entries = listOf(
+                        Localization.Resource.Entry.Section("Section A"),
+                        Localization.Resource.Entry.Key("key_1", "Value 1"),
+                        Localization.Resource.Entry.Section("Section B")
+                )
+        )))
+        resourceGenerator.createResourcesForLocalization(localization)
+        @Language("xml")
+        val xml = """
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Section A -->
+    <string name="key_1">Value 1</string>
+
+    <!-- Section B -->
+</resources>
+        """.trimIndent()
+        assertEquals(
+                xml,
+                File("test/values/strings.xml").readText()
         )
     }
 }

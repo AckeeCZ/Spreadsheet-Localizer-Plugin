@@ -2,7 +2,7 @@ group 'cz.ackee.localizer'
 version '0.9.9'
 
 buildscript {
-    ext.kotlin_version = '1.3.60'
+    ext.kotlin_version = '1.3.61'
 
     repositories {
         jcenter()
