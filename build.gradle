@@ -1,5 +1,5 @@
 group 'cz.ackee.localizer'
-version '0.9.10'
+version '0.9.11'
 
 buildscript {
     ext.kotlin_version = '1.3.61'
@@ -29,7 +29,9 @@ repositories {
 
 intellij {
     pluginName 'SpreadsheetLocalizer'
-    version '2019.1'
+    version '182.4505.22'
+    updateSinceUntilBuild false
+    sameSinceUntilBuild false
 }
 
 publishPlugin {
@@ -37,7 +39,7 @@ publishPlugin {
 }
 
 patchPluginXml {
-    changeNotes = "Generate empty last sections. Fix crash in this case."
+    changeNotes = "Fix compatibility of IntelliJ versions"
 }
 
 wrapper {
