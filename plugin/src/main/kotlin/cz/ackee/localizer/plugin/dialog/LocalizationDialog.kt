@@ -1,4 +1,4 @@
-package cz.ackee.localizer.dialog
+package cz.ackee.localizer.plugin.dialog
 
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
@@ -6,9 +6,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import cz.ackee.localizer.settings.LocalizerSettings
+import cz.ackee.localizer.plugin.settings.LocalizerSettings
 import java.io.File
-import javax.swing.*
+import javax.swing.DefaultComboBoxModel
+import javax.swing.JComboBox
+import javax.swing.JComponent
+import javax.swing.JPanel
+import javax.swing.JTextField
 
 /**
  * Dialog that collects the Google Sheet information

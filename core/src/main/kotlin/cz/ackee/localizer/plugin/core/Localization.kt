@@ -1,4 +1,4 @@
-package cz.ackee.localizer.model
+package cz.ackee.localizer.plugin.core
 
 /**
  * Localization object represents data from sheet response in resource files-oriented way. Each resource object
@@ -75,62 +75,63 @@ data class Localization(val resources: List<Resource>) {
             list of quantities).
              */
             return Localization(
-                    // iterating through all languages (columns with values)
-                    (filteredValues[0] as XmlRow.Header).cells
-                            .drop(if (sectionIndex == null) 1 else 2) // drop key column and section column if exists
-                            .mapIndexed { index, suffix ->
-                                // now we have index for particular language and its suffix
+                // iterating through all languages (columns with values)
+                (filteredValues[0] as XmlRow.Header).cells
+                    .drop(if (sectionIndex == null) 1 else 2) // drop key column and section column if exists
+                    .mapIndexed { index, suffix ->
+                        // now we have index for particular language and its suffix
 
-                                val entries = mutableListOf<Resource.Entry>()
+                        val entries = mutableListOf<Resource.Entry>()
 
-                                // starting to accumulate quantities for plural, reset to null if the next row is another plural or key
-                                var pluralAccumulator: Resource.Entry.Plural? = null
+                        // starting to accumulate quantities for plural, reset to null if the next row is another plural or key
+                        var pluralAccumulator: Resource.Entry.Plural? = null
 
-                                // iterate through each row and take values for particular language (outer cyclus)
-                                filteredValues.forEach { row ->
-                                    if (row is XmlRow.Key) {
-                                        // if this is a key row
-                                        val key = row.cells[0] // take its key
-                                        val value = row.cells.getOrNull(index + 1) ?: "" // take its value for this language (+1 due to key)
-                                        if (key.contains("##")) {
-                                            // if this is a plural string (contains "##")
-                                            val pluralKey = key.substringBefore("##") // take its key (all before "##")
-                                            if (pluralAccumulator == null) {
-                                                // if it is first plural string in sequence
-                                                pluralAccumulator = Resource.Entry.Plural(pluralKey, mutableMapOf()) // start to accumulate values for this key
-                                            } else if (pluralKey != pluralAccumulator!!.key) {
-                                                // if the accumulator already contains something, but the key differs, add plural entry to resource and start accumulate for new key
-                                                entries.add(pluralAccumulator!!)
-                                                pluralAccumulator = Resource.Entry.Plural(pluralKey, mutableMapOf())
-                                            }
-                                            // add quantity key and value to plural accumulator
-                                            pluralAccumulator!!.values.put(key.substringAfter("##{").replace("}", ""), value)
-                                        } else {
-                                            // if this is an ordinary key row (not plural)
-                                            if (pluralAccumulator != null) {
-                                                // if there is something in plural accumulator, add it to resource and reset accumulator
-                                                entries.add(pluralAccumulator!!)
-                                                pluralAccumulator = null
-                                            }
-                                            entries.add(Resource.Entry.Key(key, value)) // add key-value to resource
-                                        }
-                                    } else if (row is XmlRow.Section) {
-                                        // if the row is section
-                                        if (pluralAccumulator != null) {
-                                            // if there is something in plural accumulator, add it to resource and reset accumulator
-                                            entries.add(pluralAccumulator!!)
-                                            pluralAccumulator = null
-                                        }
-                                        entries.add(Resource.Entry.Section(row.name)) // add section to resource
+                        // iterate through each row and take values for particular language (outer cyclus)
+                        filteredValues.forEach { row ->
+                            if (row is XmlRow.Key) {
+                                // if this is a key row
+                                val key = row.cells[0] // take its key
+                                val value = row.cells.getOrNull(index + 1)
+                                    ?: "" // take its value for this language (+1 due to key)
+                                if (key.contains("##")) {
+                                    // if this is a plural string (contains "##")
+                                    val pluralKey = key.substringBefore("##") // take its key (all before "##")
+                                    if (pluralAccumulator == null) {
+                                        // if it is first plural string in sequence
+                                        pluralAccumulator = Resource.Entry.Plural(pluralKey, mutableMapOf()) // start to accumulate values for this key
+                                    } else if (pluralKey != pluralAccumulator!!.key) {
+                                        // if the accumulator already contains something, but the key differs, add plural entry to resource and start accumulate for new key
+                                        entries.add(pluralAccumulator!!)
+                                        pluralAccumulator = Resource.Entry.Plural(pluralKey, mutableMapOf())
                                     }
+                                    // add quantity key and value to plural accumulator
+                                    pluralAccumulator!!.values.put(key.substringAfter("##{").replace("}", ""), value)
+                                } else {
+                                    // if this is an ordinary key row (not plural)
+                                    if (pluralAccumulator != null) {
+                                        // if there is something in plural accumulator, add it to resource and reset accumulator
+                                        entries.add(pluralAccumulator!!)
+                                        pluralAccumulator = null
+                                    }
+                                    entries.add(Resource.Entry.Key(key, value)) // add key-value to resource
                                 }
-                                // on the end of iteration, if there is something in plural accumulator, add it to resource, reset
+                            } else if (row is XmlRow.Section) {
+                                // if the row is section
                                 if (pluralAccumulator != null) {
+                                    // if there is something in plural accumulator, add it to resource and reset accumulator
                                     entries.add(pluralAccumulator!!)
                                     pluralAccumulator = null
                                 }
-                                Resource(normalizeSuffix(suffix), entries)
+                                entries.add(Resource.Entry.Section(row.name)) // add section to resource
                             }
+                        }
+                        // on the end of iteration, if there is something in plural accumulator, add it to resource, reset
+                        if (pluralAccumulator != null) {
+                            entries.add(pluralAccumulator!!)
+                            pluralAccumulator = null
+                        }
+                        Resource(normalizeSuffix(suffix), entries)
+                    }
             )
         }
 
@@ -141,7 +142,7 @@ data class Localization(val resources: List<Resource>) {
     }
 
     data class Resource(val suffix: String,
-                        val entries: List<Resource.Entry>) {
+                        val entries: List<Entry>) {
 
         sealed class Entry {
             data class Section(val name: String) : Entry()

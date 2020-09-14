@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.10'
+    id "org.jetbrains.intellij" version "0.4.22"
+}
+
+group 'cz.ackee.localizer'
+version '0.9.11'
+
+intellij {
+    pluginName 'SpreadsheetLocalizer'
+    version '182.4505.22'
+    updateSinceUntilBuild false
+    sameSinceUntilBuild false
+}
+
+publishPlugin {
+    token project.token
+}
+
+patchPluginXml {
+    changeNotes = "Fix compatibility of IntelliJ versions"
+}
+
+dependencies {
+    implementation project(":core")
+}

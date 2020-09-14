@@ -1,11 +1,11 @@
-package cz.ackee.localizer.model
+package cz.ackee.localizer.plugin.core
 
 import java.io.File
 
 /**
  * Generates the resources XML files
  */
-class XmlGenerator(val resPath: String, val defaultLang: String = "en") {
+class XmlGenerator(private val resPath: String, private val defaultLang: String = "en") {
 
     companion object {
         const val INDENT = "    "

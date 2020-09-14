@@ -1,4 +1,4 @@
-package cz.ackee.localizer.settings
+package cz.ackee.localizer.plugin.settings
 
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
@@ -8,7 +8,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 /**
  * Persistent component to save settings
  */
-@State(name = "LocalizerSettings", storages = arrayOf(Storage("localizerSettings.xml")))
+@State(name = "LocalizerSettings", storages = [Storage("localizerSettings.xml")])
 class LocalizerSettings : PersistentStateComponent<LocalizerSettings> {
 
     var projects: List<ProjectSettings> = emptyList()

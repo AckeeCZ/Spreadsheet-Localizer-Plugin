@@ -1,2 +1,4 @@
 rootProject.name = 'localization-downloader'
+include 'plugin'
+include 'core'
 
