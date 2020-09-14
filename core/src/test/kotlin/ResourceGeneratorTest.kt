@@ -1,5 +1,5 @@
-import cz.ackee.localizer.model.Localization
-import cz.ackee.localizer.model.XmlGenerator
+import cz.ackee.localizer.plugin.core.Localization
+import cz.ackee.localizer.plugin.core.XmlGenerator
 import org.intellij.lang.annotations.Language
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -85,14 +85,14 @@ class ResourceGeneratorTest {
     @Test
     fun shouldGeneratePluralsProperly() {
         val localization = Localization(
-                listOf(
-                        Localization.Resource("en", listOf(
-                                Localization.Resource.Entry.Plural("pluralKey", mutableMapOf(
-                                        Pair("few", "values"),
-                                        Pair("other", "value")
-                                ))
-                        ))
-                )
+            listOf(
+                Localization.Resource("en", listOf(
+                    Localization.Resource.Entry.Plural("pluralKey", mutableMapOf(
+                        Pair("few", "values"),
+                        Pair("other", "value")
+                    ))
+                ))
+            )
         )
         resourceGenerator.createResourcesForLocalization(localization)
         assertEquals(
@@ -111,11 +111,11 @@ class ResourceGeneratorTest {
     fun shouldGenerateProperHtml() {
         val html = """<![CDATA[Jsem politicky exponovaná osoba<br /><a href=\"https://zonky.cz\">Co to znamená?</a>]]>"""
         val localization = Localization(
-                listOf(
-                        Localization.Resource("en", listOf(
-                                Localization.Resource.Entry.Key("keyHtml", html)
-                        ))
-                )
+            listOf(
+                Localization.Resource("en", listOf(
+                    Localization.Resource.Entry.Key("keyHtml", html)
+                ))
+            )
         )
         resourceGenerator.createResourcesForLocalization(localization)
         assertEquals(
@@ -128,11 +128,11 @@ class ResourceGeneratorTest {
     fun shouldHandleSymbolsProperly() {
         val string = """If you don't want to mess \ahoj with George & his gang, pay your &gt;25% each month through B&B"""
         val localization = Localization(
-                listOf(
-                        Localization.Resource("en", listOf(
-                                Localization.Resource.Entry.Key("key", string)
-                        ))
-                )
+            listOf(
+                Localization.Resource("en", listOf(
+                    Localization.Resource.Entry.Key("key", string)
+                ))
+            )
         )
         resourceGenerator.createResourcesForLocalization(localization)
         assertEquals(
@@ -147,12 +147,12 @@ class ResourceGeneratorTest {
     @Test
     fun `should generate empty last section`() {
         val localization = Localization(listOf(Localization.Resource(
-                suffix = "en",
-                entries = listOf(
-                        Localization.Resource.Entry.Section("Section A"),
-                        Localization.Resource.Entry.Key("key_1", "Value 1"),
-                        Localization.Resource.Entry.Section("Section B")
-                )
+            suffix = "en",
+            entries = listOf(
+                Localization.Resource.Entry.Section("Section A"),
+                Localization.Resource.Entry.Key("key_1", "Value 1"),
+                Localization.Resource.Entry.Section("Section B")
+            )
         )))
         resourceGenerator.createResourcesForLocalization(localization)
         @Language("xml")
