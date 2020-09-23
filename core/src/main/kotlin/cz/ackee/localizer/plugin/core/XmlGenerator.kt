@@ -5,7 +5,7 @@ import java.io.File
 /**
  * Generates the resources XML files
  */
-class XmlGenerator(private val resPath: String, private val defaultLang: String = "en") {
+class XmlGenerator(private val resPath: String, private val defaultLang: String) {
 
     companion object {
         const val INDENT = "    "

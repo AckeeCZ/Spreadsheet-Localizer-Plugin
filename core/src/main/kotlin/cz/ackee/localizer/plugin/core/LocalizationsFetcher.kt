@@ -5,6 +5,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.File
 import java.io.IOException
 
 class LocalizationsFetcher {
@@ -15,16 +16,30 @@ class LocalizationsFetcher {
 
     private val moshi = Moshi.Builder().build()
     private val okHttpClient = OkHttpClient.Builder()
-        .build()
+            .build()
 
-    fun fetch(configuration: FetchConfiguration) {
-        val googleSheetsResponse = getGoogleSheetsResponse(configuration)
+    fun fetch(configPath: String) {
+        val config = parseConfigFile(configPath)
+        val googleSheetsResponse = getGoogleSheetsResponse(config)
         if (googleSheetsResponse != null) {
-            processGoogleSheetsResponse(googleSheetsResponse, configuration)
+            processGoogleSheetsResponse(googleSheetsResponse, config)
         }
     }
 
-    private fun getGoogleSheetsResponse(configuration: FetchConfiguration): GoogleSheetResponse? {
+    private fun parseConfigFile(path: String): LocalizationConfig {
+        val file = File(path)
+
+        if (!file.exists()) {
+            throw NoSuchFileException(file, null, "Config file doesn't exist in provided location")
+        }
+
+        val moshiAdapter = moshi.adapter(LocalizationConfig::class.java)
+        val fetchConfiguration = moshiAdapter.fromJson(file.readText())!!
+
+        return fetchConfiguration
+    }
+
+    private fun getGoogleSheetsResponse(configuration: LocalizationConfig): GoogleSheetResponse? {
         val url = buildUrl(configuration)
         val request = buildRequest(url)
         val response = okHttpClient.newCall(request).execute()
@@ -39,32 +54,24 @@ class LocalizationsFetcher {
 
     private fun buildRequest(url: HttpUrl): Request {
         return Request.Builder()
-            .url(url)
-            .get()
-            .build()
+                .url(url)
+                .get()
+                .build()
     }
 
-    private fun buildUrl(configuration: FetchConfiguration): HttpUrl {
+    private fun buildUrl(configuration: LocalizationConfig): HttpUrl {
         return SHEETS_BASE_URL.toHttpUrl()
-            .newBuilder()
-            .addEncodedPathSegment(configuration.sheetId)
-            .addEncodedPathSegment("values")
-            .addEncodedPathSegment(configuration.listName)
-            .addEncodedQueryParameter("key", configuration.apiKey)
-            .build()
+                .newBuilder()
+                .addEncodedPathSegment(configuration.sheetId)
+                .addEncodedPathSegment("values")
+                .addEncodedPathSegment(configuration.listName)
+                .addEncodedQueryParameter("key", configuration.apiKey)
+                .build()
     }
 
-    private fun processGoogleSheetsResponse(googleSheetResponse: GoogleSheetResponse, configuration: FetchConfiguration) {
+    private fun processGoogleSheetsResponse(googleSheetResponse: GoogleSheetResponse, configuration: LocalizationConfig) {
         val xmlGenerator = XmlGenerator(configuration.resourcesFolderPath, configuration.defaultLanguage)
-        val localization = Localization.fromGoogleResponse(googleSheetResponse)
+        val localization = Localization.fromGoogleResponse(googleSheetResponse, configuration)
         xmlGenerator.createResourcesForLocalization(localization)
     }
 }
-
-data class FetchConfiguration(
-    val sheetId: String,
-    val listName: String,
-    val apiKey: String,
-    val defaultLanguage: String,
-    val resourcesFolderPath: String
-)

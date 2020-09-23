@@ -17,17 +17,15 @@ import javax.swing.JTextField
 /**
  * Dialog that collects the Google Sheet information
  */
-class LocalizationDialog(project: Project,
-                         val listener: (String, String, String, String, String) -> Unit) : DialogWrapper(project) {
+class LocalizationDialog(
+        project: Project,
+        private val listener: (String) -> Unit
+) : DialogWrapper(project) {
 
     private lateinit var uiContainer: JPanel
     private lateinit var projectComboBox: JComboBox<String>
-    private lateinit var editApiKey: JTextField
     private lateinit var editProjectName: JTextField
-    private lateinit var editId: JTextField
-    private lateinit var editSheetName: JTextField
-    private lateinit var editDefaultLang: JTextField
-    private lateinit var editPath: TextFieldWithBrowseButton
+    private lateinit var editConfigPath: TextFieldWithBrowseButton
     private val settings = ServiceManager.getService(project, LocalizerSettings::class.java)
 
     init {
@@ -36,11 +34,11 @@ class LocalizationDialog(project: Project,
         val currentSettings = settings.currentProject
         bindProjectSettings(currentSettings)
 
-        editPath.addBrowseFolderListener(
-                "Choose path",
+        editConfigPath.addBrowseFolderListener(
+                "Choose config file path",
                 "description",
                 project,
-                FileChooserDescriptorFactory.createSingleFolderDescriptor()
+                FileChooserDescriptorFactory.createSingleFileDescriptor("json")
         )
         projectComboBox.model = DefaultComboBoxModel(settings.projects.map { it.projectName }.toTypedArray() + "New project")
         projectComboBox.selectedIndex = settings.selectedProject
@@ -51,11 +49,7 @@ class LocalizationDialog(project: Project,
 
     private fun bindProjectSettings(currentSettings: LocalizerSettings.ProjectSettings?) {
         editProjectName.text = currentSettings?.projectName ?: ""
-        editApiKey.text = currentSettings?.apiKey ?: ""
-        editId.text = currentSettings?.sheetId ?: ""
-        editSheetName.text = currentSettings?.sheetName ?: ""
-        editDefaultLang.text = currentSettings?.defaultLang ?: ""
-        editPath.text = currentSettings?.resPath ?: ""
+        editConfigPath.text = currentSettings?.resPath ?: ""
     }
 
     override fun createCenterPanel(): JComponent {
@@ -63,26 +57,11 @@ class LocalizationDialog(project: Project,
     }
 
     override fun doOKAction() {
-        val apiKey = editApiKey.text
-        val id = editId.text
-        val sheetName = editSheetName.text
-        val path = editPath.text
-        val defaultLang = editDefaultLang.text
-        if (apiKey.isEmpty()) {
-            Messages.showErrorDialog("Please enter your Google API key", "Google API key is empty")
-            return
-        }
-        if (id.isEmpty()) {
-            Messages.showErrorDialog("Please enter Google sheet ID", "ID is empty")
-            return
-        }
-        if (sheetName.isEmpty()) {
-            Messages.showErrorDialog("Please enter Sheet name", "Name is empty")
-            return
-        }
-        val resDir = File(path)
-        if (!resDir.exists() || resDir.nameWithoutExtension != "res") {
-            Messages.showErrorDialog("You should choose the path to resources directory of your Android project", "Invalid directory")
+        val configPath = editConfigPath.text
+
+        val file = File(configPath)
+        if (!file.exists()) {
+            Messages.showErrorDialog("You must choose the path to localizations configuration JSON file", "Invalid directory")
             return
         }
 
@@ -90,15 +69,11 @@ class LocalizationDialog(project: Project,
 
         val currentSettings = settings.currentProject ?: LocalizerSettings.ProjectSettings()
         currentSettings.projectName = if (editProjectName.text.isNullOrEmpty()) "Default" else editProjectName.text
-        currentSettings.apiKey = apiKey
-        currentSettings.sheetId = id
-        currentSettings.sheetName = sheetName
-        currentSettings.defaultLang = defaultLang
-        currentSettings.resPath = path
+        currentSettings.resPath = configPath
         if (projectComboBox.selectedIndex > settings.projects.lastIndex) {
             settings.projects += currentSettings
         }
         super.doOKAction()
-        listener.invoke(apiKey, id, sheetName, defaultLang, path)
+        listener.invoke(configPath)
     }
 }
