@@ -15,8 +15,7 @@ class LocalizationsFetcher {
     }
 
     private val moshi = Moshi.Builder().build()
-    private val okHttpClient = OkHttpClient.Builder()
-            .build()
+    private val okHttpClient = OkHttpClient.Builder().build()
 
     fun fetch(configPath: String) {
         val config = parseConfigFile(configPath)
@@ -54,19 +53,19 @@ class LocalizationsFetcher {
 
     private fun buildRequest(url: HttpUrl): Request {
         return Request.Builder()
-                .url(url)
-                .get()
-                .build()
+            .url(url)
+            .get()
+            .build()
     }
 
     private fun buildUrl(configuration: LocalizationConfig): HttpUrl {
         return SHEETS_BASE_URL.toHttpUrl()
-                .newBuilder()
-                .addEncodedPathSegment(configuration.sheetId)
-                .addEncodedPathSegment("values")
-                .addEncodedPathSegment(configuration.listName)
-                .addEncodedQueryParameter("key", configuration.apiKey)
-                .build()
+            .newBuilder()
+            .addEncodedPathSegment(configuration.sheetId)
+            .addEncodedPathSegment("values")
+            .addEncodedPathSegment(configuration.listName)
+            .addEncodedQueryParameter("key", configuration.apiKey)
+            .build()
     }
 
     private fun processGoogleSheetsResponse(googleSheetResponse: GoogleSheetResponse, configuration: LocalizationConfig) {

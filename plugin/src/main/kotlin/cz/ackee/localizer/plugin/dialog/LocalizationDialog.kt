@@ -18,8 +18,8 @@ import javax.swing.JTextField
  * Dialog that collects the Google Sheet information
  */
 class LocalizationDialog(
-        project: Project,
-        private val listener: (String) -> Unit
+    project: Project,
+    private val listener: (String) -> Unit
 ) : DialogWrapper(project) {
 
     private lateinit var uiContainer: JPanel
@@ -35,10 +35,10 @@ class LocalizationDialog(
         bindProjectSettings(currentSettings)
 
         editConfigPath.addBrowseFolderListener(
-                "Choose config file path",
-                "description",
-                project,
-                FileChooserDescriptorFactory.createSingleFileDescriptor("json")
+            "Choose config file path",
+            "description",
+            project,
+            FileChooserDescriptorFactory.createSingleFileDescriptor("json")
         )
         projectComboBox.model = DefaultComboBoxModel(settings.projects.map { it.projectName }.toTypedArray() + "New project")
         projectComboBox.selectedIndex = settings.selectedProject
