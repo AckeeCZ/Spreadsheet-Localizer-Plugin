@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'cz.ackee.localizer'
-version '0.9.11'
+version '0.10.0'
 
 intellij {
     pluginName 'SpreadsheetLocalizer'

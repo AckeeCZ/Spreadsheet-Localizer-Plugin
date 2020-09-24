@@ -67,7 +67,7 @@ data class Localization(val resources: List<Resource>) {
                 // iterating through all languages (columns with values)
                 (filteredValues[0] as XmlRow.Header).cells
                     .drop(if (sectionIndex == null) 1 else 2) // drop key column and section column if exists
-                    .mapNotNull { configuration.languageMapping[it] } // get the suffix from mapping based on column key
+                    .map { configuration.languageMapping[it] } // get the suffix from mapping based on column key
                     .mapIndexed { index, suffix ->
                         // now we have index for particular language and its suffix
                         val entries = mutableListOf<Resource.Entry>()
@@ -75,7 +75,7 @@ data class Localization(val resources: List<Resource>) {
                         // starting to accumulate quantities for plural, reset to null if the next row is another plural or key
                         var pluralAccumulator: Resource.Entry.Plural? = null
 
-                        // iterate through each row and take values for particular language (outer cyclus)
+                        // iterate through each row and take values for particular language (outer cycle)
                         filteredValues.forEach { row ->
                             if (row is XmlRow.Key) {
                                 // if this is a key row
@@ -126,8 +126,10 @@ data class Localization(val resources: List<Resource>) {
         }
     }
 
-    data class Resource(val suffix: String,
-        val entries: List<Entry>) {
+    data class Resource(
+        val suffix: String?,
+        val entries: List<Entry>
+    ) {
 
         sealed class Entry {
             data class Section(val name: String) : Entry()

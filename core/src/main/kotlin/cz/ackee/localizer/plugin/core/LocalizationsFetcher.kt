@@ -61,15 +61,15 @@ class LocalizationsFetcher {
     private fun buildUrl(configuration: LocalizationConfig): HttpUrl {
         return SHEETS_BASE_URL.toHttpUrl()
             .newBuilder()
-            .addEncodedPathSegment(configuration.sheetId)
+            .addEncodedPathSegment(configuration.fileId)
             .addEncodedPathSegment("values")
-            .addEncodedPathSegment(configuration.listName)
+            .addEncodedPathSegment(configuration.sheetName)
             .addEncodedQueryParameter("key", configuration.apiKey)
             .build()
     }
 
     private fun processGoogleSheetsResponse(googleSheetResponse: GoogleSheetResponse, configuration: LocalizationConfig) {
-        val xmlGenerator = XmlGenerator(configuration.resourcesFolderPath, configuration.defaultLanguage)
+        val xmlGenerator = XmlGenerator(configuration.resFolderPath)
         val localization = Localization.fromGoogleResponse(googleSheetResponse, configuration)
         xmlGenerator.createResourcesForLocalization(localization)
     }

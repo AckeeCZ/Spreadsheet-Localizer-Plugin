@@ -4,24 +4,42 @@ Android Studio plugin that loads string resources from Google Spreadsheet
 ## Installation and usage
 You can install the plugin to your Android Studio directly from the JetBrains plugin repository as "Spreadsheet Localizer" or you can of course build and deploy the plugin directly from the source code using the gradle wrapper ```./gradlew buildPlugin```. The plugin then adds the action to "Load localization strings" (little globe icon) to your main toolbar. When you trigger this action the settings dialog with the following properties is shown.
 
-1. Google API key - your key for the access to the Google Spreadsheets API, you can get it in your Google developers console
-2. Google Sheet ID - the unique identificator of your Google sheet - it is the hash part of the URL you see your sheet at (e.g. ```1Z5g7bHavCe1YKnnpLcGiaKbO0OOQB5VctPvACUQVDMs```)
-3. Spreadsheet name - the name of the spreadsheet in your file the localizations are in
-4. Default language - locale id of the localization language you consider as your default language, this localizations will be stored in your default resources directory
-5. Resources directory - path to the resources directory you want to put your localizations in, it is recommended to use the placholder for the current project path to ensure the path is user and environment independent (e.g. ```$PROJECT_DIR$/app/src/main/res```)
+1. Project/project name - you may have multiple projects with different configurations.
+2. Config file path - path to config JSON file which provides configuration for project localizations. 
 
-The configuration of the localization plugin is stored per project into the file ```$PROJECT_DIR$/.idea/localizerSettings.xml``` and it is recommended to store this file in your private VCS to allow other developers to easily download fresh dependencies without another configuration needs.
+Those properties are then saved in the ```$PROJECT_DIR$/.idea/localizerSettings.xml``` file. It is recommended to add this file to your VCS to allow other developers to easily download fresh dependencies without another configuration needs.
+
+## Configuration file
+
+You should provide configuration JSON file for your project. It is separated from the plugin and may be consumed by some other service (e.g. Gradle script).
+
+The structure of this JSON is described in the example:
+
+```json
+{
+  "fileId": "1122334455", // The unique identifier of your Google Sheets file - it is the hash part of the URL
+  "sheetName": "Sheet 1", // The name of particular sheet in your file
+  "apiKey": "AIza112233", // Google Spreadsheets API, available in your Google developers console
+  "languageMapping": { // Mapping between the column in the sheet and Android values folder suffix
+    "EN": null, // null means that the language is default, localizations will be saved to "values" folder
+    "CZ": "cs",
+    "FR-FR": "fr-rFR" // E.g. the column name is "FR-FR", the localizations will be saved to "values-fr-rFR" folder
+  },
+  "resourcesFolderPath": "$PROJECT_DIR$/libraries/translations/src/main/res" // Path to your "res" folder
+}
+```
+
+Note: in previous versions of Spreadsheet localizer plugin this configuration was stored directly in plugin settings
 
 ## Spreadsheet structure
-The localization plugin of course depends on a predefined Google sheet structure. These are the rules the spreadheet must follow for the plugin to work correctly:
+The localization plugin of course depends on a predefined Google sheet structure. These are the rules the spreadsheet must follow for the plugin to work correctly:
 
-1. the optional "Section" column. When you include the column named "Section" the plugin then can divide your resources within the single resource file into commented sections. You put the names of the respective sections on a separate rows in the sheet.
-2. column "key_android" - you put the resurces keys for your application in this columns
-3. optional custom-named "key_" columns - you can put the resource keys for your other platforms in these columns (e.g. key_ios or key_web) this allows to use the same localizations for more platforms, when you use similar design for these platforms.
-4. locale named columns with the translations (e.g. "en", "de", "cs") these columns are filled with the translations for the languages you use in your app. The translations in the column specified in the settings as default language are tranferred to your default string resources file, others are transferred to their respective locale-specific resource files.
+1. The optional "Section" column. Based on values from this column the plugin visually separates the logical chunks of your resources (usually screens).The row containing section name shouldn't contain anything else.
+2. The column "key_android" - the resource keys for your strings.xml should be put here
+4. Locale columns (e.g. "en", "de", "cs") - contain actual translations. Base on config file they are mapped to resource files in corresponding "values" folders.
 
 ## Formatting params and plurals support
-The translations can of course contain all the formatting symbols like %s or %1$d to correctly support the strings formatting. It is also possible to include the HTML tags in the strings. All these symbols are correcly escaped and usable in the resources files.
+The translations can of course contain all the formatting symbols like %s or %1$d to correctly support the strings formatting. It is also possible to include the HTML tags in the strings. All these symbols are correctly escaped and usable in the resources files.
 
 The plurals support is achieved using the special key formatting. You can specify plural key in a format key##{amount} which is then correctly translated into the plurals elements.
 
@@ -29,13 +47,22 @@ The plurals support is achieved using the special key formatting. You can specif
 You can find the example spreadsheet [here](https://docs.google.com/spreadsheets/d/1Z5g7bHavCe1YKnnpLcGiaKbO0OOQB5VctPvACUQVDMs/edit#gid=0) and test in in your project with the localizerSettings.xml like this:
 ```
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="1">
-    <component name="LocalizerSettings">
-        <option name="apiKey" value="YOUR API KEY"/>
-        <option name="defaultLang" value="en"/>
-        <option name="resPath" value="$PROJECT_DIR$/app/src/main/res"/>
-        <option name="sheetId" value="1Z5g7bHavCe1YKnnpLcGiaKbO0OOQB5VctPvACUQVDMs"/>
-        <option name="sheetName" value="Localizations"/>
-    </component>
+<project version="4">
+  <component name="LocalizerSettings">
+    <option name="projects">
+      <list>
+        <ProjectSettings>
+          <option name="projectName" value="MyProject" />
+          <option name="resPath" value="$PROJECT_DIR$\localization_config.json" />
+        </ProjectSettings>
+      </list>
+    </option>
+  </component>
 </project>
 ```
+
+## Changelog
+
+- `0.10.0` 
+    - Configuration is moved to separate JSON which now needs to be provided
+    - Language mapping support: column keys may be mapped to values suffixes instead of using limited amount of supported languages. `null` suffix means default language.
