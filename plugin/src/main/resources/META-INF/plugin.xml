@@ -25,8 +25,8 @@
     <extensions defaultExtensionNs="com.intellij">
 
         <projectService
-                serviceInterface="cz.ackee.localizer.plugin.settings.LocalizerSettings"
-                serviceImplementation="cz.ackee.localizer.plugin.settings.LocalizerSettings"/>
+            serviceInterface="cz.ackee.localizer.plugin.settings.LocalizerSettings"
+            serviceImplementation="cz.ackee.localizer.plugin.settings.LocalizerSettings"/>
 
     </extensions>
 

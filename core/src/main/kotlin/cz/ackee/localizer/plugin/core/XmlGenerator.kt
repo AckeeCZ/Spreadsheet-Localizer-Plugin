@@ -5,7 +5,7 @@ import java.io.File
 /**
  * Generates the resources XML files
  */
-class XmlGenerator(private val resPath: String, private val defaultLang: String = "en") {
+class XmlGenerator(private val resPath: String, private val defaultLang: String) {
 
     companion object {
         const val INDENT = "    "
@@ -75,12 +75,12 @@ class XmlGenerator(private val resPath: String, private val defaultLang: String 
     }
 
     private fun String.format() =
-            this
-                    .replace("'", "\\'")
-                    .apply {
-                        if (!contains("CDATA")) {
-                            replace("\"", "\\\"")
-                        }
-                    }
-                    .replace("&(?!.{2,4};)".toRegex(), "&amp;")
+        this
+            .replace("'", "\\'")
+            .apply {
+                if (!contains("CDATA")) {
+                    replace("\"", "\\\"")
+                }
+            }
+            .replace("&(?!.{2,4};)".toRegex(), "&amp;")
 }

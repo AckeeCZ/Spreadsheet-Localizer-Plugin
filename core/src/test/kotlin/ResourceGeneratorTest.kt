@@ -11,41 +11,41 @@ import java.io.File
  */
 class ResourceGeneratorTest {
 
-    val resourceGenerator = XmlGenerator("test")
+    val resourceGenerator = XmlGenerator("test", "en")
 
     val enResource = Localization.Resource("en", listOf(
-            Localization.Resource.Entry.Section("Section1"),
-            Localization.Resource.Entry.Key("key1.android", "Value1"),
-            Localization.Resource.Entry.Section("Section2"),
-            Localization.Resource.Entry.Key("key2.android", "Value2"),
-            Localization.Resource.Entry.Key("key3.android", "Value3")
+        Localization.Resource.Entry.Section("Section1"),
+        Localization.Resource.Entry.Key("key1.android", "Value1"),
+        Localization.Resource.Entry.Section("Section2"),
+        Localization.Resource.Entry.Key("key2.android", "Value2"),
+        Localization.Resource.Entry.Key("key3.android", "Value3")
     ))
 
     val csResource = Localization.Resource("cs", listOf(
-            Localization.Resource.Entry.Section("Sekce1"),
-            Localization.Resource.Entry.Key("klic1.android", "Hodnota1"),
-            Localization.Resource.Entry.Section("Sekce2"),
-            Localization.Resource.Entry.Key("klic2.android", "Hodnota2"),
-            Localization.Resource.Entry.Key("klic3.android", "Hodnota3")
+        Localization.Resource.Entry.Section("Sekce1"),
+        Localization.Resource.Entry.Key("klic1.android", "Hodnota1"),
+        Localization.Resource.Entry.Section("Sekce2"),
+        Localization.Resource.Entry.Key("klic2.android", "Hodnota2"),
+        Localization.Resource.Entry.Key("klic3.android", "Hodnota3")
     ))
 
     val enXml = ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-            "<resources>\n" +
-            "<!-- Section1 -->\n" +
-            "<string name=\"key1.android\">Value1</string>\n" +
-            "<!-- Section2 -->\n" +
-            "<string name=\"key2.android\">Value2</string>\n" +
-            "<string name=\"key3.android\">Value3</string>\n" +
-            "</resources>").replace("\n", "")
+        "<resources>\n" +
+        "<!-- Section1 -->\n" +
+        "<string name=\"key1.android\">Value1</string>\n" +
+        "<!-- Section2 -->\n" +
+        "<string name=\"key2.android\">Value2</string>\n" +
+        "<string name=\"key3.android\">Value3</string>\n" +
+        "</resources>").replace("\n", "")
 
     val csXml = ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-            "<resources>\n" +
-            "<!-- Sekce1 -->\n" +
-            "<string name=\"klic1.android\">Hodnota1</string>\n" +
-            "<!-- Sekce2 -->\n" +
-            "<string name=\"klic2.android\">Hodnota2</string>\n" +
-            "<string name=\"klic3.android\">Hodnota3</string>\n" +
-            "</resources>").replace("\n", "")
+        "<resources>\n" +
+        "<!-- Sekce1 -->\n" +
+        "<string name=\"klic1.android\">Hodnota1</string>\n" +
+        "<!-- Sekce2 -->\n" +
+        "<string name=\"klic2.android\">Hodnota2</string>\n" +
+        "<string name=\"klic3.android\">Hodnota3</string>\n" +
+        "</resources>").replace("\n", "")
 
     @After
     fun clean() {
@@ -59,8 +59,8 @@ class ResourceGeneratorTest {
         val file = File("test/values/strings.xml")
         assert(file.exists())
         assertEquals(
-                enXml,
-                file.readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "").replace("\r", "").trim()
+            enXml,
+            file.readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "").replace("\r", "").trim()
         )
     }
 
@@ -73,12 +73,12 @@ class ResourceGeneratorTest {
         assert(fileEn.exists())
         assert(fileCs.exists())
         assertEquals(
-                enXml,
-                fileEn.readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "").replace("\r", "").trim()
+            enXml,
+            fileEn.readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "").replace("\r", "").trim()
         )
         assertEquals(
-                csXml,
-                fileCs.readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "").replace("\r", "").trim()
+            csXml,
+            fileCs.readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "").replace("\r", "").trim()
         )
     }
 
@@ -96,14 +96,15 @@ class ResourceGeneratorTest {
         )
         resourceGenerator.createResourcesForLocalization(localization)
         assertEquals(
-                ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                        "<resources>\n" +
-                        "<plurals name=\"pluralKey\">" +
-                        "<item quantity=\"few\">values</item>" +
-                        "<item quantity=\"other\">value</item>" +
-                        "</plurals>\n" +
-                        "</resources>").replace("\n", ""),
-                File("test/values/strings.xml").readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "").replace("\r", "").trim()
+            ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<resources>\n" +
+                "<plurals name=\"pluralKey\">" +
+                "<item quantity=\"few\">values</item>" +
+                "<item quantity=\"other\">value</item>" +
+                "</plurals>\n" +
+                "</resources>").replace("\n", ""),
+            File("test/values/strings.xml").readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "")
+                .replace("\r", "").trim()
         )
     }
 
@@ -119,8 +120,8 @@ class ResourceGeneratorTest {
         )
         resourceGenerator.createResourcesForLocalization(localization)
         assertEquals(
-                html,
-                File("test/values/strings.xml").readText().substringAfter("<string name=\"keyHtml\">").substringBefore("</string>")
+            html,
+            File("test/values/strings.xml").readText().substringAfter("<string name=\"keyHtml\">").substringBefore("</string>")
         )
     }
 
@@ -136,8 +137,8 @@ class ResourceGeneratorTest {
         )
         resourceGenerator.createResourcesForLocalization(localization)
         assertEquals(
-                "If you don\\'t want to mess \\ahoj with George &amp; his gang, pay your &gt;25% each month through B&amp;B",
-                File("test/values/strings.xml").readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
+            "If you don\\'t want to mess \\ahoj with George &amp; his gang, pay your &gt;25% each month through B&amp;B",
+            File("test/values/strings.xml").readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
         )
     }
 
@@ -167,8 +168,8 @@ class ResourceGeneratorTest {
 </resources>
         """.trimIndent()
         assertEquals(
-                xml,
-                File("test/values/strings.xml").readText()
+            xml,
+            File("test/values/strings.xml").readText()
         )
     }
 }

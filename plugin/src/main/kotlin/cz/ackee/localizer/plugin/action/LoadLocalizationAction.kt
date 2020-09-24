@@ -7,7 +7,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.wm.WindowManager
-import cz.ackee.localizer.plugin.core.FetchConfiguration
 import cz.ackee.localizer.plugin.core.LocalizationsFetcher
 import cz.ackee.localizer.plugin.dialog.LocalizationDialog
 
@@ -21,16 +20,9 @@ class LoadLocalizationAction : AnAction() {
     override fun actionPerformed(event: AnActionEvent) {
         val project = event.getData(PlatformDataKeys.PROJECT)
 
-        LocalizationDialog(project!!) { apiKey, sheetId, sheetName, defaultLang, resPath ->
+        LocalizationDialog(project!!) { configPath ->
             try {
-                fetcher.fetch(
-                    FetchConfiguration(
-                        sheetId = sheetId,
-                        listName = sheetName,
-                        defaultLanguage = defaultLang,
-                        resourcesFolderPath = resPath,
-                        apiKey = apiKey
-                    ))
+                fetcher.fetch(configPath)
                 ApplicationManager.getApplication().invokeLater {
                     VirtualFileManager.getInstance().syncRefresh()
                     WindowManager.getInstance().getStatusBar(project).info = "Resources generated successfully"

@@ -18,12 +18,8 @@ class LocalizerSettings : PersistentStateComponent<LocalizerSettings> {
         get() = projects.getOrNull(selectedProject)
 
     data class ProjectSettings(
-            var projectName: String = "",
-            var apiKey: String = "",
-            var sheetId: String = "",
-            var sheetName: String = "",
-            var defaultLang: String = "en",
-            var resPath: String = ""
+        var projectName: String = "",
+        var resPath: String = ""
     )
 
     override fun getState(): LocalizerSettings {
