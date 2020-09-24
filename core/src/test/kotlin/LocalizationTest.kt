@@ -26,12 +26,12 @@ class LocalizationTest {
         )
         val localization = Localization.fromGoogleResponse(
             response = response,
-            configuration = LocalizationConfig(languageMapping = mapOf("EN" to "en", "CS" to "cs-cs"))
+            configuration = LocalizationConfig(languageMapping = mapOf("EN" to null, "CS" to "cs-cs"))
         )
         assertEquals(
             Localization(
                 listOf(
-                    Localization.Resource("en", listOf(
+                    Localization.Resource(null, listOf(
                         Localization.Resource.Entry.Section("Section1"),
                         Localization.Resource.Entry.Key("key2.android", "Value2"),
                         Localization.Resource.Entry.Section("Section2"),

@@ -5,7 +5,7 @@ import java.io.File
 /**
  * Generates the resources XML files
  */
-class XmlGenerator(private val resPath: String, private val defaultLang: String) {
+class XmlGenerator(private val resPath: String) {
 
     companion object {
         const val INDENT = "    "
@@ -18,27 +18,26 @@ class XmlGenerator(private val resPath: String, private val defaultLang: String)
     }
 
     private fun createXmlForResource(resource: Localization.Resource) {
-
-        val valuesDirName = if (defaultLang != resource.suffix) "values-${resource.suffix}" else "values"
+        val valuesDirName = resource.suffix?.let { "values-${resource.suffix}" } ?: "values"
         val dir = File("$resPath/$valuesDirName")
         dir.mkdirs()
 
         val builder = StringBuilder().apply {
-            appendln("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+            appendLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
             append("<resources>")
 
             resource.entries.forEachIndexed { index, entry ->
                 when (entry) {
                     is Localization.Resource.Entry.Section -> {
-                        appendln()
-                        appendln()
+                        appendLine()
+                        appendLine()
                         append(INDENT)
                         append("<!-- ${entry.name} -->")
                     }
                     is Localization.Resource.Entry.Key -> {
                         // do not insert empty texts
                         if (entry.value.format().isNotEmpty()) {
-                            appendln()
+                            appendLine()
                             append(INDENT)
                             append("<string name=\"${entry.key}\">")
                             append(entry.value.format())
@@ -47,12 +46,12 @@ class XmlGenerator(private val resPath: String, private val defaultLang: String)
                     }
                     is Localization.Resource.Entry.Plural -> {
                         if (entry.values.any { it.value.isNotEmpty() }) {
-                            appendln()
+                            appendLine()
                             append(INDENT)
                             append("<plurals name=\"${entry.key}\">")
-                            entry.values.forEach { key, value ->
+                            entry.values.forEach { (key, value) ->
                                 if (value.isNotEmpty()) {
-                                    appendln()
+                                    appendLine()
                                     append(INDENT)
                                     append(INDENT)
                                     append("<item quantity=\"$key\">")
@@ -60,14 +59,14 @@ class XmlGenerator(private val resPath: String, private val defaultLang: String)
                                     append("</item>")
                                 }
                             }
-                            appendln()
+                            appendLine()
                             append(INDENT)
                             append("</plurals>")
                         }
                     }
                 }
             }
-            appendln().append("</resources>")
+            appendLine().append("</resources>")
         }
 
         val file = File(dir, "strings.xml")

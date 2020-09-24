@@ -7,13 +7,13 @@ import org.junit.Test
 import java.io.File
 
 /**
- * Test for resource generator. Tests if the generated input is valid from provided [Localization].
+ * Test for [XmlGenerator]. Tests if the generated input is valid from provided [Localization].
  */
-class ResourceGeneratorTest {
+class XmlGeneratorTest {
 
-    val resourceGenerator = XmlGenerator("test", "en")
+    private val resourceGenerator = XmlGenerator("test")
 
-    val enResource = Localization.Resource("en", listOf(
+    private val enResource = Localization.Resource(null, listOf(
         Localization.Resource.Entry.Section("Section1"),
         Localization.Resource.Entry.Key("key1.android", "Value1"),
         Localization.Resource.Entry.Section("Section2"),
@@ -21,7 +21,7 @@ class ResourceGeneratorTest {
         Localization.Resource.Entry.Key("key3.android", "Value3")
     ))
 
-    val csResource = Localization.Resource("cs", listOf(
+    private val csResource = Localization.Resource("cs", listOf(
         Localization.Resource.Entry.Section("Sekce1"),
         Localization.Resource.Entry.Key("klic1.android", "Hodnota1"),
         Localization.Resource.Entry.Section("Sekce2"),
@@ -29,7 +29,7 @@ class ResourceGeneratorTest {
         Localization.Resource.Entry.Key("klic3.android", "Hodnota3")
     ))
 
-    val enXml = ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+    private val enXml = ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
         "<resources>\n" +
         "<!-- Section1 -->\n" +
         "<string name=\"key1.android\">Value1</string>\n" +
@@ -38,7 +38,7 @@ class ResourceGeneratorTest {
         "<string name=\"key3.android\">Value3</string>\n" +
         "</resources>").replace("\n", "")
 
-    val csXml = ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+    private val csXml = ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
         "<resources>\n" +
         "<!-- Sekce1 -->\n" +
         "<string name=\"klic1.android\">Hodnota1</string>\n" +
@@ -86,7 +86,7 @@ class ResourceGeneratorTest {
     fun shouldGeneratePluralsProperly() {
         val localization = Localization(
             listOf(
-                Localization.Resource("en", listOf(
+                Localization.Resource(null, listOf(
                     Localization.Resource.Entry.Plural("pluralKey", mutableMapOf(
                         Pair("few", "values"),
                         Pair("other", "value")
@@ -113,7 +113,7 @@ class ResourceGeneratorTest {
         val html = """<![CDATA[Jsem politicky exponovaná osoba<br /><a href=\"https://zonky.cz\">Co to znamená?</a>]]>"""
         val localization = Localization(
             listOf(
-                Localization.Resource("en", listOf(
+                Localization.Resource(null, listOf(
                     Localization.Resource.Entry.Key("keyHtml", html)
                 ))
             )
@@ -130,7 +130,7 @@ class ResourceGeneratorTest {
         val string = """If you don't want to mess \ahoj with George & his gang, pay your &gt;25% each month through B&B"""
         val localization = Localization(
             listOf(
-                Localization.Resource("en", listOf(
+                Localization.Resource(null, listOf(
                     Localization.Resource.Entry.Key("key", string)
                 ))
             )
@@ -148,7 +148,7 @@ class ResourceGeneratorTest {
     @Test
     fun `should generate empty last section`() {
         val localization = Localization(listOf(Localization.Resource(
-            suffix = "en",
+            suffix = null,
             entries = listOf(
                 Localization.Resource.Entry.Section("Section A"),
                 Localization.Resource.Entry.Key("key_1", "Value 1"),
