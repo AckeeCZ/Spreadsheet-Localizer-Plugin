@@ -25,7 +25,7 @@ The structure of this JSON is described in the example:
     "CZ": "cs",
     "FR-FR": "fr-rFR" // E.g. the column name is "FR-FR", the localizations will be saved to "values-fr-rFR" folder
   },
-  "resourcesFolderPath": "$PROJECT_DIR$/libraries/translations/src/main/res" // Path to your "res" folder
+  "resourcesFolderPath": "libraries/translations/src/main/res" // Relative path to your "res" folder with respect to json configuration path
 }
 ```
 
