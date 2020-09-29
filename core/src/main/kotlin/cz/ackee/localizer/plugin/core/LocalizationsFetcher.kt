@@ -18,14 +18,14 @@ class LocalizationsFetcher {
     private val okHttpClient = OkHttpClient.Builder().build()
 
     fun fetch(configPath: String) {
-        val config = parseConfigFile(configPath)
+        val config = parseConfigFile(configPath) ?: throw IllegalArgumentException("Can't parse config file")
         val googleSheetsResponse = getGoogleSheetsResponse(config)
         if (googleSheetsResponse != null) {
-            processGoogleSheetsResponse(googleSheetsResponse, config)
+            processGoogleSheetsResponse(configPath, googleSheetsResponse, config)
         }
     }
 
-    private fun parseConfigFile(path: String): LocalizationConfig {
+    private fun parseConfigFile(path: String): LocalizationConfig? {
         val file = File(path)
 
         if (!file.exists()) {
@@ -33,9 +33,7 @@ class LocalizationsFetcher {
         }
 
         val moshiAdapter = moshi.adapter(LocalizationConfig::class.java)
-        val fetchConfiguration = moshiAdapter.fromJson(file.readText())!!
-
-        return fetchConfiguration
+        return moshiAdapter.fromJson(file.readText())
     }
 
     private fun getGoogleSheetsResponse(configuration: LocalizationConfig): GoogleSheetResponse? {
@@ -68,8 +66,8 @@ class LocalizationsFetcher {
             .build()
     }
 
-    private fun processGoogleSheetsResponse(googleSheetResponse: GoogleSheetResponse, configuration: LocalizationConfig) {
-        val xmlGenerator = XmlGenerator(configuration.resFolderPath)
+    private fun processGoogleSheetsResponse(configPath: String, googleSheetResponse: GoogleSheetResponse, configuration: LocalizationConfig) {
+        val xmlGenerator = XmlGenerator(File(File(configPath).parent, configuration.resourcesFolderPath))
         val localization = Localization.fromGoogleResponse(googleSheetResponse, configuration)
         xmlGenerator.createResourcesForLocalization(localization)
     }

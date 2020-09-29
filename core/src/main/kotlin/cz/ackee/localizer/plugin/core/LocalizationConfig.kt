@@ -5,5 +5,5 @@ data class LocalizationConfig(
     val sheetName: String = "",
     val apiKey: String = "",
     val languageMapping: Map<String, String?> = emptyMap(),
-    val resFolderPath: String = ""
+    val resourcesFolderPath: String = ""
 )

@@ -5,7 +5,7 @@ import java.io.File
 /**
  * Generates the resources XML files
  */
-class XmlGenerator(private val resPath: String) {
+class XmlGenerator(private val resFolder: File) {
 
     companion object {
         const val INDENT = "    "
@@ -19,7 +19,7 @@ class XmlGenerator(private val resPath: String) {
 
     private fun createXmlForResource(resource: Localization.Resource) {
         val valuesDirName = resource.suffix?.let { "values-${resource.suffix}" } ?: "values"
-        val dir = File("$resPath/$valuesDirName")
+        val dir = File(resFolder, valuesDirName)
         dir.mkdirs()
 
         val builder = StringBuilder().apply {
