@@ -63,6 +63,7 @@ You can find the example spreadsheet [here](https://docs.google.com/spreadsheets
 
 ## Changelog
 
-- `0.10.0` 
+- `1.0.0` 
+    - ⚠️ BREAKING CHANGE ⚠️
     - Configuration is moved to separate JSON which now needs to be provided
     - Language mapping support: column keys may be mapped to values suffixes instead of using limited amount of supported languages. `null` suffix means default language.
