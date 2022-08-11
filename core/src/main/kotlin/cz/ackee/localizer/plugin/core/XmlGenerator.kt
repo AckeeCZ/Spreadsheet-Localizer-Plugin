@@ -67,6 +67,7 @@ class XmlGenerator(private val resFolder: File) {
                 }
             }
             appendLine().append("</resources>")
+            appendLine()
         }
 
         val file = File(dir, "strings.xml")
