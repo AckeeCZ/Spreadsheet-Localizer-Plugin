@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'cz.ackee.localizer'
-version '1.0.1'
+version '1.0.2'
 
 intellij {
     pluginName 'SpreadsheetLocalizer'
@@ -15,7 +15,7 @@ intellij {
 }
 
 publishPlugin {
-    token project.token
+    token ""
 }
 
 patchPluginXml {
