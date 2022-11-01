@@ -9,9 +9,14 @@ buildscript {
     }
 }
 
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.10' apply false
+    id "org.jetbrains.intellij" version "0.4.22" apply false
+}
+
 wrapper {
-    gradleVersion = '6.0.1'
-    distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+    gradleVersion = rootProject.gradleVersion
 }
 
 allprojects {
