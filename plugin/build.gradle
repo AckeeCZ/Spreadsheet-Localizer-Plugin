@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'cz.ackee.localizer'
-version '1.0.2'
+version '1.0.3'
 
 intellij {
     pluginName 'SpreadsheetLocalizer'
@@ -19,7 +19,7 @@ publishPlugin {
 }
 
 patchPluginXml {
-    changeNotes = "Rewrite of the plugin configuration."
+    changeNotes = "Update Gradle and Kotlin"
 }
 
 dependencies {
