@@ -15,7 +15,7 @@ intellij {
 }
 
 publishPlugin {
-    token ""
+    token System.getenv("INTELLIJ_PUBLISH_TOKEN")
 }
 
 patchPluginXml {
