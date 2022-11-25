@@ -1,11 +1,11 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.10'
-    id "org.jetbrains.intellij" version "0.4.22"
+    id 'org.jetbrains.kotlin.jvm'
+    id "org.jetbrains.intellij"
 }
 
 group 'cz.ackee.localizer'
-version '1.0.2'
+version '1.0.3'
 
 intellij {
     pluginName 'SpreadsheetLocalizer'
@@ -15,11 +15,11 @@ intellij {
 }
 
 publishPlugin {
-    token ""
+    token System.getenv("INTELLIJ_PUBLISH_TOKEN")
 }
 
 patchPluginXml {
-    changeNotes = "Rewrite of the plugin configuration."
+    changeNotes = "Update Gradle and Kotlin"
 }
 
 dependencies {
