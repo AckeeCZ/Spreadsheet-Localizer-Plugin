@@ -47,6 +47,6 @@ class LocalizationsRequestBuilder {
 
     companion object {
 
-        private const val SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets"
+        const val SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets"
     }
 }
