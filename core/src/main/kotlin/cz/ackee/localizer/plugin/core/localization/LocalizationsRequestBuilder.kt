@@ -44,7 +44,7 @@ class LocalizationsRequestBuilder {
             }
             is Credentials.AccessToken -> {
                 newBuilder()
-                    .addHeader("Authorization", credentials.value)
+                    .addHeader(AUTH_HEADER, credentials.value)
                     .build()
             }
         }
@@ -53,5 +53,6 @@ class LocalizationsRequestBuilder {
     companion object {
 
         const val SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets"
+        const val AUTH_HEADER = "Authorization"
     }
 }
