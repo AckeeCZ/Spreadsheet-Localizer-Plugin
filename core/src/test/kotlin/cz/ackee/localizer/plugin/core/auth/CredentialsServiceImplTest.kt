@@ -1,11 +1,11 @@
 package cz.ackee.localizer.plugin.core.auth
 
 import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
+import cz.ackee.localizer.plugin.core.util.FileUtils
 import org.amshove.kluent.invoking
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldThrow
 import org.junit.Test
-import java.io.File
 
 class CredentialsServiceImplTest {
 
@@ -31,10 +31,9 @@ class CredentialsServiceImplTest {
 
     @Test
     fun `Get service account credentials successfully`() {
-        val pathToServiceAccount = "test/service-account.json"
-        val file = File(pathToServiceAccount)
-        file.createNewFile()
-        file.deleteOnExit()
+        val pathToServiceAccount = "test/service-account.json".also {
+            FileUtils.createTmpFile(it)
+        }
         val configuration = LocalizationConfig(apiKey = "", serviceAccountPath = pathToServiceAccount)
 
         val credentials = underTest.getCredentials(configuration)
