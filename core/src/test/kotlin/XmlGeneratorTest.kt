@@ -11,7 +11,7 @@ import java.io.File
  */
 class XmlGeneratorTest {
 
-    private val resourceGenerator = XmlGenerator("test")
+    private val resourceGenerator = XmlGenerator(File("test"))
 
     private val enResource = Localization.Resource(null, listOf(
         Localization.Resource.Entry.Section("Section1"),
@@ -169,7 +169,7 @@ class XmlGeneratorTest {
         """.trimIndent()
         assertEquals(
             xml,
-            File("test/values/strings.xml").readText()
+            File("test/values/strings.xml").readText().trimIndent()
         )
     }
 }

@@ -5,51 +5,23 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.File
 import java.io.IOException
 
 class LocalizationsFetcher {
 
-    companion object {
-        private const val SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets"
-    }
-
     private val moshi = Moshi.Builder().build()
     private val okHttpClient = OkHttpClient.Builder().build()
 
-    fun fetch(configPath: String) {
-        val config = parseConfigFile(configPath) ?: throw IllegalArgumentException("Can't parse config file")
-        val googleSheetsResponse = getGoogleSheetsResponse(config)
-        if (googleSheetsResponse != null) {
-            processGoogleSheetsResponse(configPath, googleSheetsResponse, config)
-        }
+    fun fetch(configuration: LocalizationConfig, credentials: Credentials): GoogleSheetResponse {
+        val request = buildRequest(configuration)
+
+        val requestWithCredentials = request.addCredentialsToRequest(credentials)
+
+        return getGoogleSheetsResponse(requestWithCredentials)
     }
 
-    private fun parseConfigFile(path: String): LocalizationConfig? {
-        val file = File(path)
-
-        if (!file.exists()) {
-            throw NoSuchFileException(file, null, "Config file doesn't exist in provided location")
-        }
-
-        val moshiAdapter = moshi.adapter(LocalizationConfig::class.java)
-        return moshiAdapter.fromJson(file.readText())
-    }
-
-    private fun getGoogleSheetsResponse(configuration: LocalizationConfig): GoogleSheetResponse? {
+    private fun buildRequest(configuration: LocalizationConfig): Request {
         val url = buildUrl(configuration)
-        val request = buildRequest(url)
-        val response = okHttpClient.newCall(request).execute()
-        return if (response.isSuccessful) {
-            response.body?.string()?.let { responseString ->
-                moshi.adapter(GoogleSheetResponse::class.java).fromJson(responseString)
-            } ?: throw IllegalArgumentException("Google Sheets response in invalid format")
-        } else {
-            throw IOException("${response.code} ${response.body?.string()}")
-        }
-    }
-
-    private fun buildRequest(url: HttpUrl): Request {
         return Request.Builder()
             .url(url)
             .get()
@@ -62,13 +34,36 @@ class LocalizationsFetcher {
             .addEncodedPathSegment(configuration.fileId)
             .addEncodedPathSegment("values")
             .addEncodedPathSegment(configuration.sheetName)
-            .addEncodedQueryParameter("key", configuration.apiKey)
             .build()
     }
 
-    private fun processGoogleSheetsResponse(configPath: String, googleSheetResponse: GoogleSheetResponse, configuration: LocalizationConfig) {
-        val xmlGenerator = XmlGenerator(File(File(configPath).parent, configuration.resourcesFolderPath))
-        val localization = Localization.fromGoogleResponse(googleSheetResponse, configuration)
-        xmlGenerator.createResourcesForLocalization(localization)
+    private fun getGoogleSheetsResponse(request: Request): GoogleSheetResponse {
+        val response = okHttpClient.newCall(request).execute()
+        return if (response.isSuccessful) {
+            response.body?.string()?.let { responseString ->
+                moshi.adapter(GoogleSheetResponse::class.java).fromJson(responseString)
+            } ?: throw IllegalArgumentException("Google Sheets response in invalid format")
+        } else {
+            throw IOException("${response.code} ${response.body?.string()}")
+        }
+    }
+
+    private fun Request.addCredentialsToRequest(credentials: Credentials): Request {
+        return when (credentials) {
+            is Credentials.ApiKey -> {
+                newBuilder()
+                    .url(
+                        url.newBuilder()
+                            .addEncodedQueryParameter("key", credentials.value)
+                            .build()
+                    )
+                    .build()
+            }
+        }
+    }
+
+    companion object {
+
+        private const val SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets"
     }
 }
