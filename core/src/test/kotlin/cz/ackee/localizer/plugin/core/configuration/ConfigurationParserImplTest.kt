@@ -17,7 +17,8 @@ class ConfigurationParserImplTest {
     fun `Parse configuration file successfully`() {
         val config = testConfiguration
         val path = "test/test-configuration.json"
-        createTestConfigurationFile(config, path)
+        val file = createTestConfigurationFile(config, path)
+        file.deleteOnExit()
 
         val parsedConfig = underTest.parse(path)
 
@@ -34,13 +35,14 @@ class ConfigurationParserImplTest {
     private fun createTestConfigurationFile(
         configuration: LocalizationConfig,
         path: String
-    ) {
+    ): File {
         val file = File(path)
 
         val moshiAdapter = moshi.adapter(LocalizationConfig::class.java)
         val configSerialized = moshiAdapter.toJson(configuration)
 
         file.writeText(configSerialized.trimIndent())
+        return file
     }
 
     companion object {

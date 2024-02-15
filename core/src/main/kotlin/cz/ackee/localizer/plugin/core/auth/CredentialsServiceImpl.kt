@@ -1,27 +1,25 @@
 package cz.ackee.localizer.plugin.core.auth
 
-import com.google.auth.oauth2.GoogleCredentials
 import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
 import java.io.File
-import java.io.FileInputStream
 
 interface CredentialsService {
 
     fun getCredentials(configuration: LocalizationConfig): Credentials
 }
 
-class CredentialsServiceImpl : CredentialsService {
+class CredentialsServiceImpl(
+    private val googleAuthService: GoogleAuthService = GoogleAuthServiceImpl()
+) : CredentialsService {
 
     override fun getCredentials(configuration: LocalizationConfig): Credentials {
-        return if (configuration.serviceAccount.isNotBlank()) {
-            val file = File(configuration.serviceAccount)
+        return if (configuration.serviceAccountPath.isNotBlank()) {
+            val file = File(configuration.serviceAccountPath)
             if (!file.exists()) {
                 throw NoSuchFileException(file, null, "Service account file doesn't exist in provided location")
             }
-
-            val googleCredentials = GoogleCredentials.fromStream(FileInputStream(configuration.serviceAccount))
-                .createScoped(listOf(GOOGLE_AUTH_SPREADSHEET_SCOPE))
-            Credentials.AccessToken(googleCredentials.accessToken.tokenValue)
+            val accessToken = googleAuthService.getAccessToken(configuration.serviceAccountPath, listOf(GOOGLE_AUTH_SPREADSHEET_SCOPE))
+            Credentials.AccessToken(accessToken.value)
         } else if (configuration.apiKey.isNotBlank()) {
             Credentials.ApiKey(configuration.apiKey)
         } else {
