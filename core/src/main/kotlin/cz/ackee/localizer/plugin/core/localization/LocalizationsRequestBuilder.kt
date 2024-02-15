@@ -42,6 +42,11 @@ class LocalizationsRequestBuilder {
                     )
                     .build()
             }
+            is Credentials.AccessToken -> {
+                newBuilder()
+                    .addHeader("Authorization", credentials.value)
+                    .build()
+            }
         }
     }
 
