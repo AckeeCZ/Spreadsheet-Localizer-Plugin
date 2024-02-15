@@ -3,9 +3,9 @@ package cz.ackee.localizer.plugin.core.configuration
 import com.squareup.moshi.Moshi
 import java.io.File
 
-class ConfigurationParser(
+class ConfigurationParser {
+
     private val moshi: Moshi = Moshi.Builder().build()
-) {
 
     fun parse(configPath: String): LocalizationConfig {
         val file = File(configPath)

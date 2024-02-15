@@ -8,10 +8,11 @@ import okhttp3.Request
 import java.io.IOException
 
 class LocalizationsRepository(
-    private val moshi: Moshi = Moshi.Builder().build(),
-    private val okHttpClient: OkHttpClient = OkHttpClient.Builder().build(),
     private val localizationsRequestBuilder: LocalizationsRequestBuilder = LocalizationsRequestBuilder()
 ) {
+
+    private val moshi: Moshi = Moshi.Builder().build()
+    private val okHttpClient: OkHttpClient = OkHttpClient.Builder().build()
 
     fun getLocalization(configuration: LocalizationConfig, credentials: Credentials): Localization {
         val request = localizationsRequestBuilder.build(configuration, credentials)
