@@ -1,4 +1,4 @@
-package cz.ackee.localizer.plugin.core
+package cz.ackee.localizer.plugin.core.sheet
 
 /**
  * Response from Google Sheets API

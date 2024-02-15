@@ -1,5 +1,8 @@
-package cz.ackee.localizer.plugin.core
+package cz.ackee.localizer.plugin.core.localization
 
+import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
+import cz.ackee.localizer.plugin.core.sheet.GoogleSheetResponse
+import cz.ackee.localizer.plugin.core.sheet.XmlGenerator
 import java.io.File
 
 class GoogleSheetsResponseProcessor {

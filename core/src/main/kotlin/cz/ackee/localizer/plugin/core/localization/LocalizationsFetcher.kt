@@ -1,6 +1,9 @@
-package cz.ackee.localizer.plugin.core
+package cz.ackee.localizer.plugin.core.localization
 
 import com.squareup.moshi.Moshi
+import cz.ackee.localizer.plugin.core.auth.Credentials
+import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
+import cz.ackee.localizer.plugin.core.sheet.GoogleSheetResponse
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient

@@ -1,4 +1,4 @@
-package cz.ackee.localizer.plugin.core
+package cz.ackee.localizer.plugin.core.configuration
 
 import com.squareup.moshi.Moshi
 import java.io.File

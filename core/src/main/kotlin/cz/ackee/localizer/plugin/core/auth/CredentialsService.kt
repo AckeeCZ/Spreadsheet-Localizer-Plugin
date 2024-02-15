@@ -1,4 +1,6 @@
-package cz.ackee.localizer.plugin.core
+package cz.ackee.localizer.plugin.core.auth
+
+import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
 
 class CredentialsService {
 

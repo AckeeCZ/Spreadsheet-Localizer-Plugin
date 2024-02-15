@@ -1,5 +1,6 @@
-package cz.ackee.localizer.plugin.core
+package cz.ackee.localizer.plugin.core.sheet
 
+import cz.ackee.localizer.plugin.core.localization.Localization
 import java.io.File
 
 /**

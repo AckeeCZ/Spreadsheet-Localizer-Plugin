@@ -7,10 +7,10 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.wm.WindowManager
-import cz.ackee.localizer.plugin.core.ConfigurationParser
-import cz.ackee.localizer.plugin.core.CredentialsService
-import cz.ackee.localizer.plugin.core.GoogleSheetsResponseProcessor
-import cz.ackee.localizer.plugin.core.LocalizationsFetcher
+import cz.ackee.localizer.plugin.core.auth.CredentialsService
+import cz.ackee.localizer.plugin.core.configuration.ConfigurationParser
+import cz.ackee.localizer.plugin.core.localization.GoogleSheetsResponseProcessor
+import cz.ackee.localizer.plugin.core.localization.LocalizationsFetcher
 import cz.ackee.localizer.plugin.dialog.LocalizationDialog
 
 /**
