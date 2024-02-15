@@ -1,26 +1,17 @@
 package cz.ackee.localizer.plugin.core.localization
 
-import com.squareup.moshi.Moshi
 import cz.ackee.localizer.plugin.core.auth.Credentials
 import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
-import cz.ackee.localizer.plugin.core.sheet.GoogleSheetResponse
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.IOException
 
-class LocalizationsFetcher {
+class LocalizationsRequestBuilder {
 
-    private val moshi = Moshi.Builder().build()
-    private val okHttpClient = OkHttpClient.Builder().build()
-
-    fun fetch(configuration: LocalizationConfig, credentials: Credentials): GoogleSheetResponse {
+    fun build(configuration: LocalizationConfig, credentials: Credentials): Request {
         val request = buildRequest(configuration)
 
-        val requestWithCredentials = request.addCredentialsToRequest(credentials)
-
-        return getGoogleSheetsResponse(requestWithCredentials)
+        return request.addCredentialsToRequest(credentials)
     }
 
     private fun buildRequest(configuration: LocalizationConfig): Request {
@@ -38,17 +29,6 @@ class LocalizationsFetcher {
             .addEncodedPathSegment("values")
             .addEncodedPathSegment(configuration.sheetName)
             .build()
-    }
-
-    private fun getGoogleSheetsResponse(request: Request): GoogleSheetResponse {
-        val response = okHttpClient.newCall(request).execute()
-        return if (response.isSuccessful) {
-            response.body?.string()?.let { responseString ->
-                moshi.adapter(GoogleSheetResponse::class.java).fromJson(responseString)
-            } ?: throw IllegalArgumentException("Google Sheets response in invalid format")
-        } else {
-            throw IOException("${response.code} ${response.body?.string()}")
-        }
     }
 
     private fun Request.addCredentialsToRequest(credentials: Credentials): Request {

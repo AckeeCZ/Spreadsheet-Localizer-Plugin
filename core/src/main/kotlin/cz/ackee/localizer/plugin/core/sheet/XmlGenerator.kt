@@ -1,5 +1,6 @@
 package cz.ackee.localizer.plugin.core.sheet
 
+import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
 import cz.ackee.localizer.plugin.core.localization.Localization
 import java.io.File
 
@@ -9,7 +10,12 @@ import java.io.File
 class XmlGenerator(private val resFolder: File) {
 
     companion object {
+
         const val INDENT = "    "
+
+        fun from(configurationPath: String, configuration: LocalizationConfig): XmlGenerator {
+            return XmlGenerator(File(File(configurationPath).parent, configuration.resourcesFolderPath))
+        }
     }
 
     fun createResourcesForLocalization(localization: Localization) {

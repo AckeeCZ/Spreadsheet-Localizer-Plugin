@@ -1,7 +1,6 @@
 package cz.ackee.localizer.plugin.core.localization
 
 import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
-import cz.ackee.localizer.plugin.core.sheet.GoogleSheetResponse
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

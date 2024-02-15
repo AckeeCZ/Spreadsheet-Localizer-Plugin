@@ -9,8 +9,8 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.wm.WindowManager
 import cz.ackee.localizer.plugin.core.auth.CredentialsService
 import cz.ackee.localizer.plugin.core.configuration.ConfigurationParser
-import cz.ackee.localizer.plugin.core.localization.GoogleSheetsResponseProcessor
-import cz.ackee.localizer.plugin.core.localization.LocalizationsFetcher
+import cz.ackee.localizer.plugin.core.localization.LocalizationsRepository
+import cz.ackee.localizer.plugin.core.sheet.XmlGenerator
 import cz.ackee.localizer.plugin.dialog.LocalizationDialog
 
 /**
@@ -20,8 +20,7 @@ class LoadLocalizationAction : AnAction() {
 
     private val configurationParser = ConfigurationParser()
     private val credentialsService = CredentialsService()
-    private val fetcher = LocalizationsFetcher()
-    private val googleSheetsResponseProcessor = GoogleSheetsResponseProcessor()
+    private val localizationsRepository = LocalizationsRepository()
 
     override fun actionPerformed(event: AnActionEvent) {
         val project = event.getData(PlatformDataKeys.PROJECT)
@@ -30,8 +29,10 @@ class LoadLocalizationAction : AnAction() {
             try {
                 val configuration = configurationParser.parse(configPath)
                 val credentials = credentialsService.getCredentials(configuration)
-                val sheetsResponse = fetcher.fetch(configuration, credentials)
-                googleSheetsResponseProcessor.processGoogleSheetsResponse(configPath, sheetsResponse, configuration)
+                val localization = localizationsRepository.getLocalization(configuration, credentials)
+
+                val xmlGenerator = XmlGenerator.from(configPath, configuration)
+                xmlGenerator.createResourcesForLocalization(localization)
 
                 ApplicationManager.getApplication().invokeLater {
                     VirtualFileManager.getInstance().syncRefresh()
