@@ -10,7 +10,6 @@ class LocalizationsRequestBuilder {
 
     fun build(configuration: LocalizationConfig, credentials: Credentials): Request {
         val request = buildRequest(configuration)
-
         return request.addCredentialsToRequest(credentials)
     }
 
@@ -44,7 +43,7 @@ class LocalizationsRequestBuilder {
             }
             is Credentials.AccessToken -> {
                 newBuilder()
-                    .addHeader(AUTH_HEADER, credentials.value)
+                    .addHeader(AUTH_HEADER, "Bearer ${credentials.value}")
                     .build()
             }
         }

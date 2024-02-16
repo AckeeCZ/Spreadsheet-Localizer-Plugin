@@ -15,8 +15,12 @@ interface GoogleAuthService {
 class GoogleAuthServiceImpl : GoogleAuthService {
 
     override fun getAccessToken(serviceAccountPath: String, scopes: List<String>): GoogleAuthService.TokenValue {
-        val googleCredentials = GoogleCredentials.fromStream(FileInputStream(serviceAccountPath))
+        val inputStream = FileInputStream(serviceAccountPath)
+        val googleCredentials = GoogleCredentials.fromStream(inputStream)
             .createScoped(scopes)
-        return GoogleAuthService.TokenValue(googleCredentials.accessToken.tokenValue)
+        googleCredentials.refresh()
+
+        val token = googleCredentials.accessToken.tokenValue
+        return GoogleAuthService.TokenValue(token)
     }
 }
