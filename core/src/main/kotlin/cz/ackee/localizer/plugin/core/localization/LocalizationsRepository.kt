@@ -7,14 +7,19 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
 
-class LocalizationsRepository(
+interface LocalizationsRepository {
+
+    fun getLocalization(configuration: LocalizationConfig, credentials: Credentials): Localization
+}
+
+class LocalizationsRepositoryImpl(
     private val localizationsRequestBuilder: LocalizationsRequestBuilder = LocalizationsRequestBuilder()
-) {
+) : LocalizationsRepository {
 
     private val moshi: Moshi = Moshi.Builder().build()
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder().build()
 
-    fun getLocalization(configuration: LocalizationConfig, credentials: Credentials): Localization {
+    override fun getLocalization(configuration: LocalizationConfig, credentials: Credentials): Localization {
         val request = localizationsRequestBuilder.build(configuration, credentials)
 
         val googleSheetResponse = getGoogleSheetsResponse(request)

@@ -7,11 +7,11 @@ import org.amshove.kluent.shouldThrow
 import org.junit.Test
 import java.io.File
 
-class ConfigurationParserTest {
+class ConfigurationParserImplTest {
 
     private val moshi: Moshi = Moshi.Builder().build()
 
-    private val underTest = ConfigurationParser(moshi)
+    private val underTest = ConfigurationParserImpl()
 
     @Test
     fun `Parse configuration file successfully`() {

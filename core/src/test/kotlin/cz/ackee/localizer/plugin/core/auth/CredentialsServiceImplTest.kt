@@ -6,9 +6,9 @@ import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldThrow
 import org.junit.Test
 
-class CredentialsServiceTest {
+class CredentialsServiceImplTest {
 
-    private val underTest = CredentialsService()
+    private val underTest = CredentialsServiceImpl()
 
     @Test
     fun `Get api key credentials successfully`() {
