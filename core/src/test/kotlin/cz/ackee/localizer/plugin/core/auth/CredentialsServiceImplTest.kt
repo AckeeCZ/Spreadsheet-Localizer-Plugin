@@ -24,19 +24,20 @@ class CredentialsServiceImplTest {
         val expectedApiKey = "value"
         val configuration = LocalizationConfig(apiKey = expectedApiKey, serviceAccountPath = "")
 
-        val credentials = underTest.getCredentials(configuration)
+        val credentials = underTest.getCredentials(CONFIG_DIR_PATH, configuration)
 
         credentials shouldBeEqualTo Credentials.ApiKey(expectedApiKey)
     }
 
     @Test
     fun `Get service account credentials successfully`() {
-        val pathToServiceAccount = "test/service-account.json".also {
+        val configPath = CONFIG_DIR_PATH
+        val pathToServiceAccount = "${configPath}/service-account.json".also {
             FileUtils.createTmpFile(it)
         }
         val configuration = LocalizationConfig(apiKey = "", serviceAccountPath = pathToServiceAccount)
 
-        val credentials = underTest.getCredentials(configuration)
+        val credentials = underTest.getCredentials(configPath, configuration)
 
         credentials shouldBeEqualTo Credentials.AccessToken(ACCESS_TOKEN_VALUE)
     }
@@ -46,7 +47,7 @@ class CredentialsServiceImplTest {
         val configuration = LocalizationConfig(apiKey = "", serviceAccountPath = "path/that/does/not/exist.json")
 
         invoking {
-            underTest.getCredentials(configuration)
+            underTest.getCredentials(CONFIG_DIR_PATH, configuration)
         } shouldThrow NoSuchFileException::class
     }
 
@@ -55,12 +56,13 @@ class CredentialsServiceImplTest {
         val configuration = LocalizationConfig(apiKey = "", serviceAccountPath = "")
 
         invoking {
-            underTest.getCredentials(configuration)
+            underTest.getCredentials(CONFIG_DIR_PATH, configuration)
         } shouldThrow IllegalArgumentException::class
     }
 
     companion object {
 
+        private const val CONFIG_DIR_PATH = "test"
         private const val ACCESS_TOKEN_VALUE = "access_token_123"
     }
 }

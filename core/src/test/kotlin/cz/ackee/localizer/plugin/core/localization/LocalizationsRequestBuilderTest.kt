@@ -37,7 +37,7 @@ class LocalizationsRequestBuilderTest {
         val request = underTest.build(configuration, credentials)
 
         request.url.toString() shouldBeEqualTo getExpectedUrl(fileId, sheetName, apiKey = null)
-        request.header(LocalizationsRequestBuilder.AUTH_HEADER) shouldBeEqualTo accessToken
+        request.header(LocalizationsRequestBuilder.AUTH_HEADER) shouldBeEqualTo "Bearer $accessToken"
     }
 
     private fun getExpectedUrl(fileId: String, sheetName: String, apiKey: String? = null): String {

@@ -5,20 +5,20 @@ import java.io.File
 
 interface CredentialsService {
 
-    fun getCredentials(configuration: LocalizationConfig): Credentials
+    fun getCredentials(configurationPath: String, configuration: LocalizationConfig): Credentials
 }
 
 class CredentialsServiceImpl(
     private val googleAuthService: GoogleAuthService = GoogleAuthServiceImpl()
 ) : CredentialsService {
 
-    override fun getCredentials(configuration: LocalizationConfig): Credentials {
+    override fun getCredentials(configurationPath: String, configuration: LocalizationConfig): Credentials {
         return if (configuration.serviceAccountPath.isNotBlank()) {
-            val file = File(configuration.serviceAccountPath)
+            val file = File(File(configurationPath).parent, configuration.serviceAccountPath)
             if (!file.exists()) {
                 throw NoSuchFileException(file, null, "Service account file doesn't exist in provided location")
             }
-            val accessToken = googleAuthService.getAccessToken(configuration.serviceAccountPath, listOf(GOOGLE_AUTH_SPREADSHEET_SCOPE))
+            val accessToken = googleAuthService.getAccessToken(file.path, listOf(GOOGLE_AUTH_SPREADSHEET_SCOPE))
             Credentials.AccessToken(accessToken.value)
         } else if (configuration.apiKey.isNotBlank()) {
             Credentials.ApiKey(configuration.apiKey)
