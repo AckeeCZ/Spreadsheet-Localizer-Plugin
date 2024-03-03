@@ -8,7 +8,6 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.wm.WindowManager
 import cz.ackee.localizer.plugin.core.LoadLocalizationUseCase
-import cz.ackee.localizer.plugin.core.LoadLocalizationUseCaseImpl
 import cz.ackee.localizer.plugin.dialog.LocalizationDialog
 
 /**
@@ -16,7 +15,7 @@ import cz.ackee.localizer.plugin.dialog.LocalizationDialog
  */
 class LoadLocalizationAction : AnAction() {
 
-    private val loadLocalizationUseCase: LoadLocalizationUseCase = LoadLocalizationUseCaseImpl()
+    private val loadLocalizationUseCase = LoadLocalizationUseCase()
 
     override fun actionPerformed(event: AnActionEvent) {
         val project = event.getData(PlatformDataKeys.PROJECT)

@@ -8,18 +8,13 @@ import cz.ackee.localizer.plugin.core.localization.LocalizationsRepository
 import cz.ackee.localizer.plugin.core.localization.LocalizationsRepositoryImpl
 import cz.ackee.localizer.plugin.core.sheet.XmlGenerator
 
-interface LoadLocalizationUseCase {
-
-    operator fun invoke(configPath: String)
-}
-
-class LoadLocalizationUseCaseImpl(
+class LoadLocalizationUseCase(
     private val configurationParser: ConfigurationParser = ConfigurationParserImpl(),
     private val credentialsService: CredentialsService = CredentialsServiceImpl(),
     private val localizationsRepository: LocalizationsRepository = LocalizationsRepositoryImpl()
-) : LoadLocalizationUseCase {
+) {
 
-    override fun invoke(configPath: String) {
+    operator fun invoke(configPath: String) {
         val configuration = configurationParser.parse(configPath)
         val credentials = credentialsService.getCredentials(configuration)
         val localization = localizationsRepository.getLocalization(configuration, credentials)
