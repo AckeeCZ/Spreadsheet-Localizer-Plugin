@@ -7,7 +7,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.wm.WindowManager
-import cz.ackee.localizer.plugin.core.LocalizationsFetcher
+import cz.ackee.localizer.plugin.core.LoadLocalizationUseCase
 import cz.ackee.localizer.plugin.dialog.LocalizationDialog
 
 /**
@@ -15,14 +15,15 @@ import cz.ackee.localizer.plugin.dialog.LocalizationDialog
  */
 class LoadLocalizationAction : AnAction() {
 
-    private val fetcher = LocalizationsFetcher()
+    private val loadLocalizationUseCase = LoadLocalizationUseCase()
 
     override fun actionPerformed(event: AnActionEvent) {
         val project = event.getData(PlatformDataKeys.PROJECT)
 
         LocalizationDialog(project!!) { configPath ->
             try {
-                fetcher.fetch(configPath)
+                loadLocalizationUseCase(configPath)
+
                 ApplicationManager.getApplication().invokeLater {
                     VirtualFileManager.getInstance().syncRefresh()
                     WindowManager.getInstance().getStatusBar(project).info = "Resources generated successfully"

@@ -1,4 +1,6 @@
-package cz.ackee.localizer.plugin.core
+package cz.ackee.localizer.plugin.core.localization
+
+import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
 
 /**
  * Localization object represents data from sheet response in resource files-oriented way. Each resource object

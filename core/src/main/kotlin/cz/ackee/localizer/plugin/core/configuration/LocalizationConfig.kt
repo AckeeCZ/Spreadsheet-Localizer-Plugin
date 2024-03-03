@@ -1,4 +1,4 @@
-package cz.ackee.localizer.plugin.core
+package cz.ackee.localizer.plugin.core.configuration
 
 data class LocalizationConfig(
     val fileId: String = "",

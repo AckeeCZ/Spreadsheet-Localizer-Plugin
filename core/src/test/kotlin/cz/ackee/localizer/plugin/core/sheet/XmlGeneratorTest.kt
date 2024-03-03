@@ -1,5 +1,6 @@
-import cz.ackee.localizer.plugin.core.Localization
-import cz.ackee.localizer.plugin.core.XmlGenerator
+package cz.ackee.localizer.plugin.core.sheet
+
+import cz.ackee.localizer.plugin.core.localization.Localization
 import org.intellij.lang.annotations.Language
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -11,23 +12,27 @@ import java.io.File
  */
 class XmlGeneratorTest {
 
-    private val resourceGenerator = XmlGenerator("test")
+    private val resourceGenerator = XmlGenerator(File("test"))
 
-    private val enResource = Localization.Resource(null, listOf(
-        Localization.Resource.Entry.Section("Section1"),
-        Localization.Resource.Entry.Key("key1.android", "Value1"),
-        Localization.Resource.Entry.Section("Section2"),
-        Localization.Resource.Entry.Key("key2.android", "Value2"),
-        Localization.Resource.Entry.Key("key3.android", "Value3")
-    ))
+    private val enResource = Localization.Resource(
+        null, listOf(
+            Localization.Resource.Entry.Section("Section1"),
+            Localization.Resource.Entry.Key("key1.android", "Value1"),
+            Localization.Resource.Entry.Section("Section2"),
+            Localization.Resource.Entry.Key("key2.android", "Value2"),
+            Localization.Resource.Entry.Key("key3.android", "Value3")
+        )
+    )
 
-    private val csResource = Localization.Resource("cs", listOf(
-        Localization.Resource.Entry.Section("Sekce1"),
-        Localization.Resource.Entry.Key("klic1.android", "Hodnota1"),
-        Localization.Resource.Entry.Section("Sekce2"),
-        Localization.Resource.Entry.Key("klic2.android", "Hodnota2"),
-        Localization.Resource.Entry.Key("klic3.android", "Hodnota3")
-    ))
+    private val csResource = Localization.Resource(
+        "cs", listOf(
+            Localization.Resource.Entry.Section("Sekce1"),
+            Localization.Resource.Entry.Key("klic1.android", "Hodnota1"),
+            Localization.Resource.Entry.Section("Sekce2"),
+            Localization.Resource.Entry.Key("klic2.android", "Hodnota2"),
+            Localization.Resource.Entry.Key("klic3.android", "Hodnota3")
+        )
+    )
 
     private val enXml = ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
         "<resources>\n" +
@@ -86,12 +91,16 @@ class XmlGeneratorTest {
     fun shouldGeneratePluralsProperly() {
         val localization = Localization(
             listOf(
-                Localization.Resource(null, listOf(
-                    Localization.Resource.Entry.Plural("pluralKey", mutableMapOf(
-                        Pair("few", "values"),
-                        Pair("other", "value")
-                    ))
-                ))
+                Localization.Resource(
+                    null, listOf(
+                        Localization.Resource.Entry.Plural(
+                            "pluralKey", mutableMapOf(
+                                Pair("few", "values"),
+                                Pair("other", "value")
+                            )
+                        )
+                    )
+                )
             )
         )
         resourceGenerator.createResourcesForLocalization(localization)
@@ -113,9 +122,11 @@ class XmlGeneratorTest {
         val html = """<![CDATA[Jsem politicky exponovaná osoba<br /><a href=\"https://zonky.cz\">Co to znamená?</a>]]>"""
         val localization = Localization(
             listOf(
-                Localization.Resource(null, listOf(
-                    Localization.Resource.Entry.Key("keyHtml", html)
-                ))
+                Localization.Resource(
+                    null, listOf(
+                        Localization.Resource.Entry.Key("keyHtml", html)
+                    )
+                )
             )
         )
         resourceGenerator.createResourcesForLocalization(localization)
@@ -130,9 +141,11 @@ class XmlGeneratorTest {
         val string = """If you don't want to mess \ahoj with George & his gang, pay your &gt;25% each month through B&B"""
         val localization = Localization(
             listOf(
-                Localization.Resource(null, listOf(
-                    Localization.Resource.Entry.Key("key", string)
-                ))
+                Localization.Resource(
+                    null, listOf(
+                        Localization.Resource.Entry.Key("key", string)
+                    )
+                )
             )
         )
         resourceGenerator.createResourcesForLocalization(localization)
@@ -147,14 +160,18 @@ class XmlGeneratorTest {
      */
     @Test
     fun `should generate empty last section`() {
-        val localization = Localization(listOf(Localization.Resource(
-            suffix = null,
-            entries = listOf(
-                Localization.Resource.Entry.Section("Section A"),
-                Localization.Resource.Entry.Key("key_1", "Value 1"),
-                Localization.Resource.Entry.Section("Section B")
+        val localization = Localization(
+            listOf(
+                Localization.Resource(
+                    suffix = null,
+                    entries = listOf(
+                        Localization.Resource.Entry.Section("Section A"),
+                        Localization.Resource.Entry.Key("key_1", "Value 1"),
+                        Localization.Resource.Entry.Section("Section B")
+                    )
+                )
             )
-        )))
+        )
         resourceGenerator.createResourcesForLocalization(localization)
         @Language("xml")
         val xml = """
@@ -169,7 +186,7 @@ class XmlGeneratorTest {
         """.trimIndent()
         assertEquals(
             xml,
-            File("test/values/strings.xml").readText()
+            File("test/values/strings.xml").readText().trimIndent()
         )
     }
 }
