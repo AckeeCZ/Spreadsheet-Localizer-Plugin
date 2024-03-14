@@ -20,6 +20,8 @@ The structure of this JSON is described in the example:
   "fileId": "1122334455", // The unique identifier of your Google Sheets file - it is the hash part of the URL
   "sheetName": "Sheet 1", // The name of particular sheet in your file
   "apiKey": "AIza112233", // Google Spreadsheets API, available in your Google developers console
+  "serviceAccountPath": "localizer/service-account.json",
+  // Service Account specification json
   "languageMapping": { // Mapping between the column in the sheet and Android values folder suffix
     "EN": null, // null means that the language is default, localizations will be saved to "values" folder
     "CZ": "cs",
@@ -43,8 +45,20 @@ The translations can of course contain all the formatting symbols like %s or %1$
 
 The plurals support is achieved using the special key formatting. You can specify plural key in a format key##{amount} which is then correctly translated into the plurals elements.
 
-## Example spreadheet
-You can find the example spreadsheet [here](https://docs.google.com/spreadsheets/d/1Z5g7bHavCe1YKnnpLcGiaKbO0OOQB5VctPvACUQVDMs/edit#gid=0) and test in in your project with the localizerSettings.xml like this:
+## Authorization
+
+There are two ways this plugin can authorize towards a spreadsheet
+
+- API key. This requires to create a new API key in Google console. This approach has disadvantage that a spreadsheet
+  must be public for read
+- service account. This requires to create a new Service account withing Google Console. Then the spreadsheet does not
+  have to be public and the service account must have access to this file
+
+## Example spreadsheet
+
+You can find the example
+spreadsheet [here](https://docs.google.com/spreadsheets/d/1Z5g7bHavCe1YKnnpLcGiaKbO0OOQB5VctPvACUQVDMs/edit#gid=0) and
+test it in your project with the localizerSettings.xml like this:
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
@@ -63,6 +77,8 @@ You can find the example spreadsheet [here](https://docs.google.com/spreadsheets
 
 ## Changelog
 
+- `1.1.0`
+  - Support for service accounts authentication
 - `1.0.0` 
     - ⚠️ BREAKING CHANGE ⚠️
     - Configuration is moved to separate JSON which now needs to be provided
