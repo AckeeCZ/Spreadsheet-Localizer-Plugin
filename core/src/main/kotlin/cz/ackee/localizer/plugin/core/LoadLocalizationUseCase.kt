@@ -16,7 +16,7 @@ class LoadLocalizationUseCase(
 
     operator fun invoke(configPath: String) {
         val configuration = configurationParser.parse(configPath)
-        val credentials = credentialsService.getCredentials(configuration)
+        val credentials = credentialsService.getCredentials(configPath, configuration)
         val localization = localizationsRepository.getLocalization(configuration, credentials)
 
         val xmlGenerator = XmlGenerator.from(configPath, configuration)
