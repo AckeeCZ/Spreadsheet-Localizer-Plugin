@@ -51,7 +51,7 @@ There are two ways this plugin can authorize towards a spreadsheet
 
 - API key. This requires to create a new API key in Google console. This approach has disadvantage that a spreadsheet
   must be public for read
-- service account. This requires to create a new Service account withing Google Console. Then the spreadsheet does not
+- service account. This requires to create a new Service account within Google Console. Then the spreadsheet does not
   have to be public and the service account must have access to this file
 
 ## Example spreadsheet
