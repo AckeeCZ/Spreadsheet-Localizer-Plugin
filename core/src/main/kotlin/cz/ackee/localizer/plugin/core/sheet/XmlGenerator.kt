@@ -7,14 +7,21 @@ import java.io.File
 /**
  * Generates the resources XML files
  */
-class XmlGenerator(private val resFolder: File) {
+class XmlGenerator(
+    private val resFolder: File,
+    private val supportEmptyStrings: Boolean,
+) {
 
     companion object {
 
         const val INDENT = "    "
 
         fun from(configurationPath: String, configuration: LocalizationConfig): XmlGenerator {
-            return XmlGenerator(File(File(configurationPath).parent, configuration.resourcesFolderPath))
+            val resFolder = File(File(configurationPath).parent, configuration.resourcesFolderPath)
+            return XmlGenerator(
+                resFolder = resFolder,
+                supportEmptyStrings = configuration.supportEmptyStrings,
+            )
         }
     }
 
@@ -33,7 +40,7 @@ class XmlGenerator(private val resFolder: File) {
             appendLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
             append("<resources>")
 
-            resource.entries.forEachIndexed { index, entry ->
+            resource.entries.forEachIndexed { _, entry ->
                 when (entry) {
                     is Localization.Resource.Entry.Section -> {
                         appendLine()
@@ -42,11 +49,15 @@ class XmlGenerator(private val resFolder: File) {
                         append("<!-- ${entry.name} -->")
                     }
                     is Localization.Resource.Entry.Key -> {
-                        // do not insert empty texts
-                        if (entry.value.format().isNotEmpty()) {
+                        val formattedValue = entry.value.format()
+                        if (formattedValue.isEmpty() && supportEmptyStrings) {
                             appendLine()
                             append(INDENT)
-                            append("<string name=\"${entry.key}\">")
+                            append("""<string name="${entry.key}"/>""")
+                        } else if (formattedValue.isNotEmpty()) {
+                            appendLine()
+                            append(INDENT)
+                            append("""<string name="${entry.key}">""")
                             append(entry.value.format())
                             append("</string>")
                         }

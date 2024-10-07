@@ -28,10 +28,18 @@ The structure of this JSON is described in the example:
     "FR-FR": "fr-rFR" // E.g. the column name is "FR-FR", the localizations will be saved to "values-fr-rFR" folder
   },
   "resourcesFolderPath": "libraries/translations/src/main/res" // Relative path to your "res" folder with respect to json configuration path
+  "supportEmptyStrings": false // Enables to support empty strings in the localization sheet
 }
 ```
 
 Note: in previous versions of Spreadsheet localizer plugin this configuration was stored directly in plugin settings
+
+### Empty strings
+Plugin has a configurable option to either support or not support empty strings in the localization sheet. This can be
+configured via `supportEmptyStrings` attribute. When set to `true`, it takes empty strings from the localization sheet and
+generates them to the XML file. When set to `false`, it just discards any empty strings found in the sheet. `supportEmptyStrings`
+can be omitted from the configuration JSON for backwards compatibility and defaults to `false` in that case to preserve
+a previous behaviour.
 
 ## Spreadsheet structure
 The localization plugin of course depends on a predefined Google sheet structure. These are the rules the spreadsheet must follow for the plugin to work correctly:
@@ -76,7 +84,8 @@ test it in your project with the localizerSettings.xml like this:
 ```
 
 ## Changelog
-
+. `1.2.0`
+  - Support for including empty strings from localization sheet to the generated XML file
 - `1.1.0`
   - Support for service accounts authentication
 - `1.0.0` 
