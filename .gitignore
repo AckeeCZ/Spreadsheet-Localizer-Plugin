@@ -32,3 +32,6 @@ thumbs.db
 
 outputs/mapping.txt
 artwork/
+
+# Intellij
+.intellijPlatform

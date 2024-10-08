@@ -4,6 +4,14 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
 }
 
+repositories {
+    mavenCentral()
+
+    intellijPlatform {
+        defaultRepositories()
+    }
+}
+
 group 'cz.ackee.localizer'
 version '1.2.0'
 
@@ -11,7 +19,6 @@ intellijPlatform {
     pluginConfiguration {
         name = 'SpreadsheetLocalizer'
     }
-    version '182.4505.22'
 }
 
 publishPlugin {
@@ -23,5 +30,11 @@ patchPluginXml {
 }
 
 dependencies {
+    intellijPlatform {
+        androidStudio("2024.1.2.13")
+        bundledPlugin("org.jetbrains.android")
+        instrumentationTools()
+    }
+
     implementation project(":core")
 }
