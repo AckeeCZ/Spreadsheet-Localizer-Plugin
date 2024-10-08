@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+
 plugins {
     id 'java'
     alias(libs.plugins.intellij.platform)
@@ -13,11 +15,24 @@ repositories {
 }
 
 group 'cz.ackee.localizer'
-version '1.2.0'
+version '1.2.1'
+
+def targetVersion = "2024.1.2.13"
 
 intellijPlatform {
     pluginConfiguration {
         name = 'SpreadsheetLocalizer'
+        ideaVersion {
+            sinceBuild.set("203")
+            // This prevents "patching" default untilBuild version to plugin.xml file, which means we do not have an
+            //  upper limit for AS version we support
+            untilBuild.set(project.<String>provider { null })
+        }
+    }
+    pluginVerification {
+        ides {
+            ide(IntelliJPlatformType.AndroidStudio, targetVersion)
+        }
     }
 }
 
@@ -26,14 +41,15 @@ publishPlugin {
 }
 
 patchPluginXml {
-    changeNotes = "Add support for empty strings"
+    changeNotes = "Fix plugin min and max IDE versions support"
 }
 
 dependencies {
     intellijPlatform {
-        androidStudio("2024.1.2.13")
+        androidStudio(targetVersion)
         bundledPlugin("org.jetbrains.android")
         instrumentationTools()
+        pluginVerifier()
     }
 
     implementation project(":core")

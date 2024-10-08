@@ -84,7 +84,9 @@ test it in your project with the localizerSettings.xml like this:
 ```
 
 ## Changelog
-. `1.2.0`
+- `1.2.1`
+  - Fix plugin min and max IDE versions support
+- `1.2.0`
   - Support for including empty strings from localization sheet to the generated XML file
 - `1.1.0`
   - Support for service accounts authentication
