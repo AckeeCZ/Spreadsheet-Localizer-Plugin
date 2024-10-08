@@ -26,7 +26,7 @@ publishPlugin {
 }
 
 patchPluginXml {
-    changeNotes = "Update Gradle and Kotlin"
+    changeNotes = "Add support for empty strings"
 }
 
 dependencies {
