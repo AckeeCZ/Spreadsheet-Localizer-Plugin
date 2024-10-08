@@ -1,10 +1,12 @@
 package cz.ackee.localizer.plugin.core.sheet
 
 import cz.ackee.localizer.plugin.core.localization.Localization
+import org.amshove.kluent.shouldBeEqualTo
 import org.intellij.lang.annotations.Language
-import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import java.io.File
 
 /**
@@ -12,7 +14,10 @@ import java.io.File
  */
 class XmlGeneratorTest {
 
-    private val resourceGenerator = XmlGenerator(File("test"))
+    @get:Rule
+    val temporaryFolder = TemporaryFolder()
+
+    private val resFolder by lazy { temporaryFolder.newFolder("res") }
 
     private val enResource = Localization.Resource(
         null, listOf(
@@ -52,39 +57,38 @@ class XmlGeneratorTest {
         "<string name=\"klic3.android\">Hodnota3</string>\n" +
         "</resources>").replace("\n", "")
 
-    @After
-    fun clean() {
-        File("test").delete()
+    private val fileEn by lazy { File(resFolder, "values/strings.xml") }
+    private val fileCs by lazy { File(resFolder, "values-cs/strings.xml") }
+    private val defaultStringsFile by lazy { File(resFolder, "values/strings.xml") }
+
+    fun createSut(supportEmptyStrings: Boolean = false): XmlGenerator {
+        return XmlGenerator(resFolder, supportEmptyStrings = supportEmptyStrings)
     }
 
     @Test
     fun shouldGenerateResourceForOneLanguage() {
         val localization = Localization(listOf(enResource))
-        resourceGenerator.createResourcesForLocalization(localization)
-        val file = File("test/values/strings.xml")
-        assert(file.exists())
-        assertEquals(
-            enXml,
-            file.readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "").replace("\r", "").trim()
-        )
+        createSut().createResourcesForLocalization(localization)
+        assert(defaultStringsFile.exists())
+        assertEquals(enXml, defaultStringsFile.readAndNormalizeXml())
+    }
+
+    private fun File.readAndNormalizeXml(): String {
+        return readText()
+            .replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "")
+            .replace("\n", "")
+            .replace("\r", "")
+            .trim()
     }
 
     @Test
     fun shouldGenerateResourcesForMultipleLanguages() {
         val localization = Localization(listOf(enResource, csResource))
-        resourceGenerator.createResourcesForLocalization(localization)
-        val fileEn = File("test/values/strings.xml")
-        val fileCs = File("test/values-cs/strings.xml")
+        createSut().createResourcesForLocalization(localization)
         assert(fileEn.exists())
         assert(fileCs.exists())
-        assertEquals(
-            enXml,
-            fileEn.readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "").replace("\r", "").trim()
-        )
-        assertEquals(
-            csXml,
-            fileCs.readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "").replace("\r", "").trim()
-        )
+        assertEquals(enXml, fileEn.readAndNormalizeXml())
+        assertEquals(csXml, fileCs.readAndNormalizeXml())
     }
 
     @Test
@@ -103,7 +107,7 @@ class XmlGeneratorTest {
                 )
             )
         )
-        resourceGenerator.createResourcesForLocalization(localization)
+        createSut().createResourcesForLocalization(localization)
         assertEquals(
             ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<resources>\n" +
@@ -112,8 +116,7 @@ class XmlGeneratorTest {
                 "<item quantity=\"other\">value</item>" +
                 "</plurals>\n" +
                 "</resources>").replace("\n", ""),
-            File("test/values/strings.xml").readText().replace("(?m)^[\\s&&[^\\n]]+|[\\s+&&[^\\n]]+$".toRegex(), "").replace("\n", "")
-                .replace("\r", "").trim()
+            defaultStringsFile.readAndNormalizeXml()
         )
     }
 
@@ -129,10 +132,10 @@ class XmlGeneratorTest {
                 )
             )
         )
-        resourceGenerator.createResourcesForLocalization(localization)
+        createSut().createResourcesForLocalization(localization)
         assertEquals(
             html,
-            File("test/values/strings.xml").readText().substringAfter("<string name=\"keyHtml\">").substringBefore("</string>")
+            defaultStringsFile.readText().substringAfter("<string name=\"keyHtml\">").substringBefore("</string>")
         )
     }
 
@@ -148,10 +151,10 @@ class XmlGeneratorTest {
                 )
             )
         )
-        resourceGenerator.createResourcesForLocalization(localization)
+        createSut().createResourcesForLocalization(localization)
         assertEquals(
             "If you don\\'t want to mess \\ahoj with George &amp; his gang, pay your &gt;25% each month through B&amp;B",
-            File("test/values/strings.xml").readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
+            defaultStringsFile.readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
         )
     }
 
@@ -172,7 +175,7 @@ class XmlGeneratorTest {
                 )
             )
         )
-        resourceGenerator.createResourcesForLocalization(localization)
+        createSut().createResourcesForLocalization(localization)
         @Language("xml")
         val xml = """
 <?xml version="1.0" encoding="utf-8"?>
@@ -184,9 +187,40 @@ class XmlGeneratorTest {
     <!-- Section B -->
 </resources>
         """.trimIndent()
-        assertEquals(
-            xml,
-            File("test/values/strings.xml").readText().trimIndent()
+        assertEquals(xml, defaultStringsFile.readText().trimIndent())
+    }
+
+    @Test
+    fun `should include empty entry value if configured to support it`() {
+        testEmptyStringInclusion(
+            supportEmptyStrings = true,
+            getExpectedStringElement = { key -> """<string name="$key"/>""" },
+        )
+    }
+
+    private fun testEmptyStringInclusion(
+        supportEmptyStrings: Boolean,
+        getExpectedStringElement: (String) -> String,
+    ) {
+        val key = "key"
+        val resource = Localization.Resource(
+            suffix = null,
+            entries = listOf(Localization.Resource.Entry.Key(key, "")),
+        )
+        val localization = Localization(listOf(resource))
+
+        createSut(supportEmptyStrings = supportEmptyStrings).createResourcesForLocalization(localization)
+
+        val actual = defaultStringsFile.readAndNormalizeXml()
+        val expected = """<?xml version="1.0" encoding="utf-8"?><resources>${getExpectedStringElement(key)}</resources>"""
+        actual shouldBeEqualTo expected
+    }
+
+    @Test
+    fun `should not include empty entry value if configured to not support it`() {
+        testEmptyStringInclusion(
+            supportEmptyStrings = false,
+            getExpectedStringElement = { "" },
         )
     }
 }

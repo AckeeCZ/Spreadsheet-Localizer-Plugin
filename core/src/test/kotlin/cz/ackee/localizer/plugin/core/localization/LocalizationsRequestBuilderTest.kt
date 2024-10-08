@@ -2,11 +2,15 @@ package cz.ackee.localizer.plugin.core.localization
 
 import cz.ackee.localizer.plugin.core.auth.Credentials
 import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
-import cz.ackee.localizer.plugin.core.util.FileUtils
 import org.amshove.kluent.shouldBeEqualTo
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 
 class LocalizationsRequestBuilderTest {
+
+    @get:Rule
+    val temporaryFolder = TemporaryFolder()
 
     private val underTest = LocalizationsRequestBuilder()
 
@@ -28,9 +32,7 @@ class LocalizationsRequestBuilderTest {
         val fileId = "fileId3"
         val sheetName = "sheetName4"
         val accessToken = "accessToken123"
-        val pathToServiceAccount = "test/service-account.json".also {
-            FileUtils.createTmpFile(it)
-        }
+        val pathToServiceAccount = temporaryFolder.newFile("service-account.json").absolutePath
         val configuration = LocalizationConfig(fileId = fileId, sheetName = sheetName, serviceAccountPath = pathToServiceAccount)
         val credentials = Credentials.AccessToken(accessToken)
 

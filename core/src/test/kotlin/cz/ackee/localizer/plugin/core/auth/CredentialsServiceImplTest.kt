@@ -1,13 +1,18 @@
 package cz.ackee.localizer.plugin.core.auth
 
 import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
-import cz.ackee.localizer.plugin.core.util.FileUtils
 import org.amshove.kluent.invoking
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldThrow
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
+import java.io.File
 
 class CredentialsServiceImplTest {
+
+    @get:Rule
+    val temporaryFolder = TemporaryFolder()
 
     private val googleAuthService = object : GoogleAuthService {
         override fun getAccessToken(serviceAccountPath: String, scopes: List<String>): GoogleAuthService.TokenValue {
@@ -24,18 +29,19 @@ class CredentialsServiceImplTest {
         val expectedApiKey = "value"
         val configuration = LocalizationConfig(apiKey = expectedApiKey, serviceAccountPath = "")
 
-        val credentials = underTest.getCredentials(CONFIG_DIR_PATH, configuration)
+        val credentials = underTest.getCredentials(CONFIG_DIR, configuration)
 
         credentials shouldBeEqualTo Credentials.ApiKey(expectedApiKey)
     }
 
     @Test
     fun `Get service account credentials successfully`() {
-        val configPath = CONFIG_DIR_PATH
-        val pathToServiceAccount = "${configPath}/service-account.json".also {
-            FileUtils.createTmpFile(it)
-        }
-        val configuration = LocalizationConfig(apiKey = "", serviceAccountPath = pathToServiceAccount)
+        val configPath = CONFIG_DIR
+        val pathToServiceAccount = File(
+            temporaryFolder.newFolder(configPath),
+            "service-account.json",
+        ).also { it.createNewFile() }
+        val configuration = LocalizationConfig(apiKey = "", serviceAccountPath = pathToServiceAccount.absolutePath)
 
         val credentials = underTest.getCredentials(configPath, configuration)
 
@@ -47,7 +53,7 @@ class CredentialsServiceImplTest {
         val configuration = LocalizationConfig(apiKey = "", serviceAccountPath = "path/that/does/not/exist.json")
 
         invoking {
-            underTest.getCredentials(CONFIG_DIR_PATH, configuration)
+            underTest.getCredentials(CONFIG_DIR, configuration)
         } shouldThrow NoSuchFileException::class
     }
 
@@ -56,13 +62,13 @@ class CredentialsServiceImplTest {
         val configuration = LocalizationConfig(apiKey = "", serviceAccountPath = "")
 
         invoking {
-            underTest.getCredentials(CONFIG_DIR_PATH, configuration)
+            underTest.getCredentials(CONFIG_DIR, configuration)
         } shouldThrow IllegalArgumentException::class
     }
 
     companion object {
 
-        private const val CONFIG_DIR_PATH = "test"
+        private const val CONFIG_DIR = "test"
         private const val ACCESS_TOKEN_VALUE = "access_token_123"
     }
 }

@@ -11,6 +11,7 @@ build/
 .idea/
 .gradle/
 captures/
+.kotlin/
 
 
 #iml files
@@ -31,3 +32,6 @@ thumbs.db
 
 outputs/mapping.txt
 artwork/
+
+# Intellij
+.intellijPlatform
