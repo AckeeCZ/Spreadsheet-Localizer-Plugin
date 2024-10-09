@@ -1,10 +1,10 @@
 package cz.ackee.localizer.plugin.dialog
 
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.TextBrowseFolderListener
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import cz.ackee.localizer.plugin.settings.LocalizerSettings
 import java.io.File
@@ -26,7 +26,7 @@ class LocalizationDialog(
     private lateinit var projectComboBox: JComboBox<String>
     private lateinit var editProjectName: JTextField
     private lateinit var editConfigPath: TextFieldWithBrowseButton
-    private val settings = ServiceManager.getService(project, LocalizerSettings::class.java)
+    private val settings = project.getService(LocalizerSettings::class.java)
 
     init {
         init()
@@ -34,12 +34,11 @@ class LocalizationDialog(
         val currentSettings = settings.currentProject
         bindProjectSettings(currentSettings)
 
-        editConfigPath.addBrowseFolderListener(
-            "Choose config file path",
-            "description",
-            project,
-            FileChooserDescriptorFactory.createSingleFileDescriptor("json")
-        )
+        val descriptor = FileChooserDescriptorFactory.createSingleFileDescriptor("json").apply {
+            title = "Choose Config File Path"
+        }
+        val listener = TextBrowseFolderListener(descriptor, project)
+        editConfigPath.addBrowseFolderListener(listener)
         projectComboBox.model = DefaultComboBoxModel(settings.projects.map { it.projectName }.toTypedArray() + "New project")
         projectComboBox.selectedIndex = settings.selectedProject
         projectComboBox.addItemListener {

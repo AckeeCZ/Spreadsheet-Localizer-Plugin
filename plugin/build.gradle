@@ -17,13 +17,13 @@ repositories {
 group 'cz.ackee.localizer'
 version '1.2.1'
 
-def targetVersion = "2024.1.2.13"
+def targetVersion = "2022.3.1.18"
 
 intellijPlatform {
     pluginConfiguration {
         name = 'SpreadsheetLocalizer'
         ideaVersion {
-            sinceBuild.set("203")
+            sinceBuild.set("223")
             // This prevents "patching" default untilBuild version to plugin.xml file, which means we do not have an
             //  upper limit for AS version we support
             untilBuild.set(project.<String>provider { null })
