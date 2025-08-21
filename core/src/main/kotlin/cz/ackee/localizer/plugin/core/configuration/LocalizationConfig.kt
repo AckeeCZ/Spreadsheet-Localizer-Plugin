@@ -18,4 +18,5 @@ data class LocalizationConfig(
     @SerialName("languageMapping") val languageMapping: Map<String, String?> = emptyMap(),
     @SerialName("resourcesFolderPath") val resourcesFolderPath: String = "",
     @SerialName("supportEmptyStrings") val supportEmptyStrings: Boolean = false,
+    @SerialName("resourcesStructure") val resourcesStructure: ResourcesStructure = ResourcesStructure.DEFAULT,
 )
