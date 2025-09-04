@@ -100,7 +100,7 @@ class XmlGenerator(
     ): String {
         val suffix = resource.suffix
         val valuesDirName = when (resourcesStructure) {
-            ResourcesStructure.DEFAULT -> suffix?.let { "values-$suffix" } ?: "values"
+            ResourcesStructure.ANDROID -> suffix?.let { "values-$suffix" } ?: "values"
             ResourcesStructure.MOKO_RESOURCES -> suffix ?: "base"
         }
         return valuesDirName

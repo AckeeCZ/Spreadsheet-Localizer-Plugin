@@ -29,7 +29,7 @@ The structure of this JSON is described in the example:
   },
   "resourcesFolderPath": "libraries/translations/src/main/res" // Relative path to your "res" folder with respect to json configuration path
   "supportEmptyStrings": false // Enables to support empty strings in the localization sheet
-  "resourcesStructure" : "DEFAULT" // Structure of the generated resources files, could be DEFAULT or MOKO_RESOURCES
+  "resourcesStructure" : "ANDROID" // Structure of the generated resources files, could be ANDROID or MOKO_RESOURCES
 }
 ```
 

@@ -78,11 +78,11 @@ class ConfigurationParserImplTest {
     }
 
     @Test
-    fun `Default to resourcesStructure=DEFAULT if the attribute is missing`() {
+    fun `Default to resourcesStructure=ANDROID if the attribute is missing`() {
         val file = createTestConfigurationFileFrom(LocalizationConfig(), includeResourcesStructure = false)
 
         val actualConfig = underTest.parse(file.absolutePath)
 
-        actualConfig.resourcesStructure shouldBeEqualTo ResourcesStructure.DEFAULT
+        actualConfig.resourcesStructure shouldBeEqualTo ResourcesStructure.ANDROID
     }
 }
