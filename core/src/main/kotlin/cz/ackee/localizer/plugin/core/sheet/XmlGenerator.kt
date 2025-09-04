@@ -1,6 +1,7 @@
 package cz.ackee.localizer.plugin.core.sheet
 
 import cz.ackee.localizer.plugin.core.configuration.LocalizationConfig
+import cz.ackee.localizer.plugin.core.configuration.ResourcesStructure
 import cz.ackee.localizer.plugin.core.localization.Localization
 import java.io.File
 
@@ -25,14 +26,15 @@ class XmlGenerator(
         }
     }
 
-    fun createResourcesForLocalization(localization: Localization) {
+    fun createResourcesForLocalization(localization: Localization, resourcesStructure: ResourcesStructure) {
         localization.resources.forEach {
-            createXmlForResource(it)
+            createXmlForResource(it, resourcesStructure)
         }
     }
 
-    private fun createXmlForResource(resource: Localization.Resource) {
-        val valuesDirName = resource.suffix?.let { "values-${resource.suffix}" } ?: "values"
+    private fun createXmlForResource(resource: Localization.Resource, resourcesStructure: ResourcesStructure) {
+        val valuesDirName = resolveValuesFolder(resource, resourcesStructure)
+
         val dir = File(resFolder, valuesDirName)
         dir.mkdirs()
 
@@ -90,6 +92,18 @@ class XmlGenerator(
 
         val file = File(dir, "strings.xml")
         file.writeText(builder.toString())
+    }
+
+    private fun resolveValuesFolder(
+        resource: Localization.Resource,
+        resourcesStructure: ResourcesStructure,
+    ): String {
+        val suffix = resource.suffix
+        val valuesDirName = when (resourcesStructure) {
+            ResourcesStructure.ANDROID -> suffix?.let { "values-$suffix" } ?: "values"
+            ResourcesStructure.MOKO_RESOURCES -> suffix ?: "base"
+        }
+        return valuesDirName
     }
 
     private fun String.format() =

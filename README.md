@@ -29,6 +29,7 @@ The structure of this JSON is described in the example:
   },
   "resourcesFolderPath": "libraries/translations/src/main/res" // Relative path to your "res" folder with respect to json configuration path
   "supportEmptyStrings": false // Enables to support empty strings in the localization sheet
+  "resourcesStructure" : "ANDROID" // Structure of the generated resources files, could be ANDROID or MOKO_RESOURCES
 }
 ```
 
@@ -46,7 +47,10 @@ The localization plugin of course depends on a predefined Google sheet structure
 
 1. The optional "Section" column. Based on values from this column the plugin visually separates the logical chunks of your resources (usually screens).The row containing section name shouldn't contain anything else.
 2. The column "key_android" - the resource keys for your strings.xml should be put here
-4. Locale columns (e.g. "en", "de", "cs") - contain actual translations. Base on config file they are mapped to resource files in corresponding "values" folders.
+3. Locale columns (e.g. "en", "de", "cs") - contain actual translations. 
+4. Base on config file they are mapped to resource files in corresponding to the `resourcesStructure` type.
+  - For `DEFAULT` are created files like `values/strings.xml`, `values-cs/strings.xml`, `values-fr-rFR/strings.xml` etc.
+  - For `MOKO_RESOURCES` are created files like `base/strings.xml`, `cs/strings.xml`, `fr-rFR/strings.xml` etc.
 
 ## Formatting params and plurals support
 The translations can of course contain all the formatting symbols like %s or %1$d to correctly support the strings formatting. It is also possible to include the HTML tags in the strings. All these symbols are correctly escaped and usable in the resources files.

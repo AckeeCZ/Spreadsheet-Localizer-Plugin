@@ -1,5 +1,6 @@
 package cz.ackee.localizer.plugin.core.sheet
 
+import cz.ackee.localizer.plugin.core.configuration.ResourcesStructure
 import cz.ackee.localizer.plugin.core.localization.Localization
 import org.amshove.kluent.shouldBeEqualTo
 import org.intellij.lang.annotations.Language
@@ -57,20 +58,41 @@ class XmlGeneratorTest {
         "<string name=\"klic3.android\">Hodnota3</string>\n" +
         "</resources>").replace("\n", "")
 
-    private val fileEn by lazy { File(resFolder, "values/strings.xml") }
-    private val fileCs by lazy { File(resFolder, "values-cs/strings.xml") }
-    private val defaultStringsFile by lazy { File(resFolder, "values/strings.xml") }
+    private val fileEnDefaultStructure by lazy { File(resFolder, "values/strings.xml") }
+    private val fileCsDefaultStructure by lazy { File(resFolder, "values-cs/strings.xml") }
+    private val defaultStringsFileDefaultStructure by lazy { File(resFolder, "values/strings.xml") }
+
+    private val fileEnMokoStructure by lazy { File(resFolder, "base/strings.xml") }
+    private val fileCsMokoStructure by lazy { File(resFolder, "cs/strings.xml") }
+    private val defaultStringsFileMokoStructure by lazy { File(resFolder, "base/strings.xml") }
 
     fun createSut(supportEmptyStrings: Boolean = false): XmlGenerator {
         return XmlGenerator(resFolder, supportEmptyStrings = supportEmptyStrings)
     }
 
     @Test
-    fun shouldGenerateResourceForOneLanguage() {
+    fun shouldGenerateResourceForOneLanguageDefaultStructure() {
+        testShouldGenerateResourceForOneLanguage(
+            file = defaultStringsFileDefaultStructure,
+            structure = ResourcesStructure.ANDROID
+        )
+    }
+
+    @Test
+    fun shouldGenerateResourceForOneLanguageMokoStructure() {
+        testShouldGenerateResourceForOneLanguage(
+            file = defaultStringsFileMokoStructure,
+            structure = ResourcesStructure.MOKO_RESOURCES
+        )
+    }
+
+    private fun testShouldGenerateResourceForOneLanguage(file: File, structure: ResourcesStructure) {
         val localization = Localization(listOf(enResource))
-        createSut().createResourcesForLocalization(localization)
-        assert(defaultStringsFile.exists())
-        assertEquals(enXml, defaultStringsFile.readAndNormalizeXml())
+
+        createSut().createResourcesForLocalization(localization, structure)
+
+        assert(file.exists())
+        assertEquals(enXml, file.readAndNormalizeXml())
     }
 
     private fun File.readAndNormalizeXml(): String {
@@ -82,13 +104,32 @@ class XmlGeneratorTest {
     }
 
     @Test
-    fun shouldGenerateResourcesForMultipleLanguages() {
+    fun shouldGenerateResourcesForMultipleLanguagesDefaultStructure() {
+        testShouldGenerateResourcesForMultipleLanguages(
+            structure = ResourcesStructure.ANDROID,
+            enFile = fileEnDefaultStructure,
+            csFile = fileCsDefaultStructure
+        )
+    }
+
+    @Test
+    fun shouldGenerateResourcesForMultipleLanguagesMokoStructure() {
+        testShouldGenerateResourcesForMultipleLanguages(
+            structure = ResourcesStructure.MOKO_RESOURCES,
+            enFile = fileEnMokoStructure,
+            csFile = fileCsMokoStructure
+        )
+    }
+
+    private fun testShouldGenerateResourcesForMultipleLanguages(structure: ResourcesStructure, enFile: File, csFile: File) {
         val localization = Localization(listOf(enResource, csResource))
-        createSut().createResourcesForLocalization(localization)
-        assert(fileEn.exists())
-        assert(fileCs.exists())
-        assertEquals(enXml, fileEn.readAndNormalizeXml())
-        assertEquals(csXml, fileCs.readAndNormalizeXml())
+
+        createSut().createResourcesForLocalization(localization, structure)
+
+        assert(enFile.exists())
+        assert(csFile.exists())
+        assertEquals(enXml, enFile.readAndNormalizeXml())
+        assertEquals(csXml, csFile.readAndNormalizeXml())
     }
 
     @Test
@@ -107,7 +148,7 @@ class XmlGeneratorTest {
                 )
             )
         )
-        createSut().createResourcesForLocalization(localization)
+        createSut().createResourcesForLocalization(localization, ResourcesStructure.ANDROID)
         assertEquals(
             ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<resources>\n" +
@@ -116,7 +157,7 @@ class XmlGeneratorTest {
                 "<item quantity=\"other\">value</item>" +
                 "</plurals>\n" +
                 "</resources>").replace("\n", ""),
-            defaultStringsFile.readAndNormalizeXml()
+            defaultStringsFileDefaultStructure.readAndNormalizeXml()
         )
     }
 
@@ -132,10 +173,10 @@ class XmlGeneratorTest {
                 )
             )
         )
-        createSut().createResourcesForLocalization(localization)
+        createSut().createResourcesForLocalization(localization, ResourcesStructure.ANDROID)
         assertEquals(
             html,
-            defaultStringsFile.readText().substringAfter("<string name=\"keyHtml\">").substringBefore("</string>")
+            defaultStringsFileDefaultStructure.readText().substringAfter("<string name=\"keyHtml\">").substringBefore("</string>")
         )
     }
 
@@ -151,10 +192,10 @@ class XmlGeneratorTest {
                 )
             )
         )
-        createSut().createResourcesForLocalization(localization)
+        createSut().createResourcesForLocalization(localization, ResourcesStructure.ANDROID)
         assertEquals(
             "If you don\\'t want to mess \\ahoj with George &amp; his gang, pay your &gt;25% each month through B&amp;B",
-            defaultStringsFile.readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
+            defaultStringsFileDefaultStructure.readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
         )
     }
 
@@ -175,7 +216,7 @@ class XmlGeneratorTest {
                 )
             )
         )
-        createSut().createResourcesForLocalization(localization)
+        createSut().createResourcesForLocalization(localization, ResourcesStructure.ANDROID)
         @Language("xml")
         val xml = """
 <?xml version="1.0" encoding="utf-8"?>
@@ -187,7 +228,7 @@ class XmlGeneratorTest {
     <!-- Section B -->
 </resources>
         """.trimIndent()
-        assertEquals(xml, defaultStringsFile.readText().trimIndent())
+        assertEquals(xml, defaultStringsFileDefaultStructure.readText().trimIndent())
     }
 
     @Test
@@ -209,9 +250,9 @@ class XmlGeneratorTest {
         )
         val localization = Localization(listOf(resource))
 
-        createSut(supportEmptyStrings = supportEmptyStrings).createResourcesForLocalization(localization)
+        createSut(supportEmptyStrings = supportEmptyStrings).createResourcesForLocalization(localization, ResourcesStructure.ANDROID)
 
-        val actual = defaultStringsFile.readAndNormalizeXml()
+        val actual = defaultStringsFileDefaultStructure.readAndNormalizeXml()
         val expected = """<?xml version="1.0" encoding="utf-8"?><resources>${getExpectedStringElement(key)}</resources>"""
         actual shouldBeEqualTo expected
     }

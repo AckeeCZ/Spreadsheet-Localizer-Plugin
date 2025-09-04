@@ -27,6 +27,7 @@ class ConfigurationParserImplTest {
             languageMapping = mapOf("CZ" to "cs", "FR-FR" to "fr-rFR"),
             resourcesFolderPath = "libraries/translations/src/main/res",
             supportEmptyStrings = true,
+            resourcesStructure = ResourcesStructure.MOKO_RESOURCES,
         )
         val file = createTestConfigurationFileFrom(expectedConfig)
 
@@ -38,6 +39,7 @@ class ConfigurationParserImplTest {
     private fun createTestConfigurationFileFrom(
         config: LocalizationConfig,
         includeSupportEmptyStrings: Boolean = true,
+        includeResourcesStructure: Boolean = true,
     ): File {
         val serializedConfig = buildJsonObject {
             put("fileId", config.fileId)
@@ -51,6 +53,9 @@ class ConfigurationParserImplTest {
             put("resourcesFolderPath", config.resourcesFolderPath)
             if (includeSupportEmptyStrings) {
                 put("supportEmptyStrings", config.supportEmptyStrings)
+            }
+            if (includeResourcesStructure) {
+                put("resourcesStructure", config.resourcesStructure.name)
             }
         }.toString()
         return temporaryFolder.newFile("config.json").also { it.writeText(serializedConfig.trimIndent()) }
@@ -70,5 +75,14 @@ class ConfigurationParserImplTest {
         val actualConfig = underTest.parse(file.absolutePath)
 
         actualConfig.supportEmptyStrings shouldBeEqualTo false
+    }
+
+    @Test
+    fun `Default to resourcesStructure=ANDROID if the attribute is missing`() {
+        val file = createTestConfigurationFileFrom(LocalizationConfig(), includeResourcesStructure = false)
+
+        val actualConfig = underTest.parse(file.absolutePath)
+
+        actualConfig.resourcesStructure shouldBeEqualTo ResourcesStructure.ANDROID
     }
 }

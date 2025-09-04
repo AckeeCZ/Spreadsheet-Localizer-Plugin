@@ -20,6 +20,6 @@ class LoadLocalizationUseCase(
         val localization = localizationsRepository.getLocalization(configuration, credentials)
 
         val xmlGenerator = XmlGenerator.from(configPath, configuration)
-        xmlGenerator.createResourcesForLocalization(localization)
+        xmlGenerator.createResourcesForLocalization(localization, configuration.resourcesStructure)
     }
 }
