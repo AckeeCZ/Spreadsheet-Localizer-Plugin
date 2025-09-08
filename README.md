@@ -88,6 +88,8 @@ test it in your project with the localizerSettings.xml like this:
 ```
 
 ## Changelog
+- `1.2.2`
+  - Support for Moko-resources localization file structure
 - `1.2.1`
   - Fix plugin min and max IDE versions support
 - `1.2.0`

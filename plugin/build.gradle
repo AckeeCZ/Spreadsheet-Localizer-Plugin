@@ -15,7 +15,7 @@ repositories {
 }
 
 group 'cz.ackee.localizer'
-version '1.2.1'
+version '1.2.2'
 
 def targetVersion = "2022.3.1.18"
 
