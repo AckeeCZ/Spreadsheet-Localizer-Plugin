@@ -40,6 +40,7 @@ class ConfigurationParserImplTest {
         config: LocalizationConfig,
         includeSupportEmptyStrings: Boolean = true,
         includeResourcesStructure: Boolean = true,
+        includeEscapeQuotes: Boolean = true,
     ): File {
         val serializedConfig = buildJsonObject {
             put("fileId", config.fileId)
@@ -56,6 +57,9 @@ class ConfigurationParserImplTest {
             }
             if (includeResourcesStructure) {
                 put("resourcesStructure", config.resourcesStructure.name)
+            }
+            if (includeEscapeQuotes) {
+                put("escapeQuotes", config.escapeQuotes)
             }
         }.toString()
         return temporaryFolder.newFile("config.json").also { it.writeText(serializedConfig.trimIndent()) }
@@ -84,5 +88,24 @@ class ConfigurationParserImplTest {
         val actualConfig = underTest.parse(file.absolutePath)
 
         actualConfig.resourcesStructure shouldBeEqualTo ResourcesStructure.ANDROID
+    }
+
+    @Test
+    fun `Default to escapeQuotes=true if the attribute is missing`() {
+        val file = createTestConfigurationFileFrom(LocalizationConfig(), includeEscapeQuotes = false)
+
+        val actualConfig = underTest.parse(file.absolutePath)
+
+        actualConfig.escapeQuotes shouldBeEqualTo true
+    }
+
+    @Test
+    fun `Parse escapeQuotes=false correctly`() {
+        val config = LocalizationConfig(escapeQuotes = false)
+        val file = createTestConfigurationFileFrom(config)
+
+        val actualConfig = underTest.parse(file.absolutePath)
+
+        actualConfig.escapeQuotes shouldBeEqualTo false
     }
 }

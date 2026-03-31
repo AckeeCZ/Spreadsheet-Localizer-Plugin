@@ -66,8 +66,8 @@ class XmlGeneratorTest {
     private val fileCsMokoStructure by lazy { File(resFolder, "cs/strings.xml") }
     private val defaultStringsFileMokoStructure by lazy { File(resFolder, "base/strings.xml") }
 
-    fun createSut(supportEmptyStrings: Boolean = false): XmlGenerator {
-        return XmlGenerator(resFolder, supportEmptyStrings = supportEmptyStrings)
+    fun createSut(supportEmptyStrings: Boolean = false, escapeQuotes: Boolean = true): XmlGenerator {
+        return XmlGenerator(resFolder, supportEmptyStrings = supportEmptyStrings, escapeQuotes = escapeQuotes)
     }
 
     @Test
@@ -262,6 +262,82 @@ class XmlGeneratorTest {
         testEmptyStringInclusion(
             supportEmptyStrings = false,
             getExpectedStringElement = { "" },
+        )
+    }
+
+    @Test
+    fun `should not escape quotes when escapeQuotes is false`() {
+        val string = "We'll log you out and you won't be able to continue"
+        val localization = Localization(
+            listOf(
+                Localization.Resource(
+                    null, listOf(
+                        Localization.Resource.Entry.Key("key", string)
+                    )
+                )
+            )
+        )
+        createSut(escapeQuotes = false).createResourcesForLocalization(localization, ResourcesStructure.ANDROID)
+        assertEquals(
+            string,
+            defaultStringsFileDefaultStructure.readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
+        )
+    }
+
+    @Test
+    fun `should escape quotes by default`() {
+        val string = "We'll log you out"
+        val localization = Localization(
+            listOf(
+                Localization.Resource(
+                    null, listOf(
+                        Localization.Resource.Entry.Key("key", string)
+                    )
+                )
+            )
+        )
+        createSut().createResourcesForLocalization(localization, ResourcesStructure.ANDROID)
+        assertEquals(
+            "We\\'ll log you out",
+            defaultStringsFileDefaultStructure.readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
+        )
+    }
+
+    @Test
+    fun `should still escape ampersands when escapeQuotes is false`() {
+        val string = "Tom & Jerry"
+        val localization = Localization(
+            listOf(
+                Localization.Resource(
+                    null, listOf(
+                        Localization.Resource.Entry.Key("key", string)
+                    )
+                )
+            )
+        )
+        createSut(escapeQuotes = false).createResourcesForLocalization(localization, ResourcesStructure.ANDROID)
+        assertEquals(
+            "Tom &amp; Jerry",
+            defaultStringsFileDefaultStructure.readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
+        )
+    }
+
+    @Test
+    fun `should still escape double quotes when escapeQuotes is false`() {
+        val string = "She said \"hello\" to him"
+        val localization = Localization(
+            listOf(
+                Localization.Resource(
+                    null, listOf(
+                        Localization.Resource.Entry.Key("key", string)
+                    )
+                )
+            )
+        )
+        createSut(escapeQuotes = false).createResourcesForLocalization(localization, ResourcesStructure.ANDROID)
+        assertEquals(
+            "She said \\\"hello\\\" to him",
+            defaultStringsFileDefaultStructure.readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
         )
     }
 }

@@ -11,6 +11,7 @@ import java.io.File
 class XmlGenerator(
     private val resFolder: File,
     private val supportEmptyStrings: Boolean,
+    private val escapeQuotes: Boolean = true,
 ) {
 
     companion object {
@@ -22,6 +23,7 @@ class XmlGenerator(
             return XmlGenerator(
                 resFolder = resFolder,
                 supportEmptyStrings = configuration.supportEmptyStrings,
+                escapeQuotes = configuration.escapeQuotes,
             )
         }
     }
@@ -108,10 +110,18 @@ class XmlGenerator(
 
     private fun String.format() =
         this
-            .replace("'", "\\'")
-            .apply {
-                if (!contains("CDATA")) {
-                    replace("\"", "\\\"")
+            .let { str ->
+                if (escapeQuotes) {
+                    str.replace("'", "\\'")
+                } else {
+                    str
+                }
+            }
+            .let { str ->
+                if (!str.contains("CDATA")) {
+                    str.replace("\"", "\\\"")
+                } else {
+                    str
                 }
             }
             .replace("&(?!.{2,4};)".toRegex(), "&amp;")
