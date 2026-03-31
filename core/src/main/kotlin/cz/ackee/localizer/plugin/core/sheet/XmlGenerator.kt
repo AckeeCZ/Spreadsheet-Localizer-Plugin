@@ -113,11 +113,13 @@ class XmlGenerator(
             .let { str ->
                 if (escapeQuotes) {
                     str.replace("'", "\\'")
-                        .apply {
-                            if (!contains("CDATA")) {
-                                replace("\"", "\\\"")
-                            }
-                        }
+                } else {
+                    str
+                }
+            }
+            .let { str ->
+                if (!str.contains("CDATA")) {
+                    str.replace("\"", "\\\"")
                 } else {
                     str
                 }

@@ -321,4 +321,23 @@ class XmlGeneratorTest {
             defaultStringsFileDefaultStructure.readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
         )
     }
+
+    @Test
+    fun `should still escape double quotes when escapeQuotes is false`() {
+        val string = "She said \"hello\" to him"
+        val localization = Localization(
+            listOf(
+                Localization.Resource(
+                    null, listOf(
+                        Localization.Resource.Entry.Key("key", string)
+                    )
+                )
+            )
+        )
+        createSut(escapeQuotes = false).createResourcesForLocalization(localization, ResourcesStructure.ANDROID)
+        assertEquals(
+            "She said \\\"hello\\\" to him",
+            defaultStringsFileDefaultStructure.readText().substringAfter("<string name=\"key\">").substringBefore("</string>")
+        )
+    }
 }
