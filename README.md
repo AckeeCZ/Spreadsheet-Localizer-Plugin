@@ -27,9 +27,10 @@ The structure of this JSON is described in the example:
     "CZ": "cs",
     "FR-FR": "fr-rFR" // E.g. the column name is "FR-FR", the localizations will be saved to "values-fr-rFR" folder
   },
-  "resourcesFolderPath": "libraries/translations/src/main/res" // Relative path to your "res" folder with respect to json configuration path
-  "supportEmptyStrings": false // Enables to support empty strings in the localization sheet
-  "resourcesStructure" : "ANDROID" // Structure of the generated resources files, could be ANDROID or MOKO_RESOURCES
+  "resourcesFolderPath": "libraries/translations/src/main/res", // Relative path to your "res" folder with respect to json configuration path
+  "supportEmptyStrings": false, // Enables to support empty strings in the localization sheet
+  "resourcesStructure" : "ANDROID", // Structure of the generated resources files, could be ANDROID or MOKO_RESOURCES
+  "escapeQuotes" : true // Whether escape quotes or not, disable this when working with Compose Resources
 }
 ```
 
