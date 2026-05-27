@@ -41,6 +41,7 @@ class ConfigurationParserImplTest {
         includeSupportEmptyStrings: Boolean = true,
         includeResourcesStructure: Boolean = true,
         includeEscapeQuotes: Boolean = true,
+        includeKeyColumn: Boolean = true,
     ): File {
         val serializedConfig = buildJsonObject {
             put("fileId", config.fileId)
@@ -60,6 +61,9 @@ class ConfigurationParserImplTest {
             }
             if (includeEscapeQuotes) {
                 put("escapeQuotes", config.escapeQuotes)
+            }
+            if (includeKeyColumn) {
+                put("keyColumn", config.keyColumn)
             }
         }.toString()
         return temporaryFolder.newFile("config.json").also { it.writeText(serializedConfig.trimIndent()) }
@@ -107,5 +111,24 @@ class ConfigurationParserImplTest {
         val actualConfig = underTest.parse(file.absolutePath)
 
         actualConfig.escapeQuotes shouldBeEqualTo false
+    }
+
+    @Test
+    fun `Default to keyColumn=key_android if the attribute is missing`() {
+        val file = createTestConfigurationFileFrom(LocalizationConfig(), includeKeyColumn = false)
+
+        val actualConfig = underTest.parse(file.absolutePath)
+
+        actualConfig.keyColumn shouldBeEqualTo "key_android"
+    }
+
+    @Test
+    fun `Parse custom keyColumn correctly`() {
+        val config = LocalizationConfig(keyColumn = "key_custom")
+        val file = createTestConfigurationFileFrom(config)
+
+        val actualConfig = underTest.parse(file.absolutePath)
+
+        actualConfig.keyColumn shouldBeEqualTo "key_custom"
     }
 }

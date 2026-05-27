@@ -54,4 +54,43 @@ class LocalizationTest {
             localization
         )
     }
+
+    @Test
+    fun shouldDropUnmappedColumnsAndKeepValueAlignment() {
+        val response = GoogleSheetResponse(
+            range = "",
+            majorDimension = "",
+            values = listOf(
+                listOf("section", "key_android", "key_android_note", "EN", "CS"),
+                listOf("Section1"),
+                listOf("", "key1.android", "ignored1", "Value1EN", "Value1CS"),
+                listOf("", "key2.android", "ignored2", "Value2EN", "Value2CS")
+            )
+        )
+        val localization = Localization.fromGoogleResponse(
+            response = response,
+            configuration = LocalizationConfig(languageMapping = mapOf("EN" to null, "CS" to "cs-cs"))
+        )
+        assertEquals(
+            Localization(
+                listOf(
+                    Localization.Resource(
+                        null, listOf(
+                            Localization.Resource.Entry.Section("Section1"),
+                            Localization.Resource.Entry.Key("key1.android", "Value1EN"),
+                            Localization.Resource.Entry.Key("key2.android", "Value2EN")
+                        )
+                    ),
+                    Localization.Resource(
+                        "cs-cs", listOf(
+                            Localization.Resource.Entry.Section("Section1"),
+                            Localization.Resource.Entry.Key("key1.android", "Value1CS"),
+                            Localization.Resource.Entry.Key("key2.android", "Value2CS")
+                        )
+                    )
+                )
+            ),
+            localization
+        )
+    }
 }

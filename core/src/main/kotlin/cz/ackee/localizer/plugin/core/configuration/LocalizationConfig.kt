@@ -20,4 +20,5 @@ data class LocalizationConfig(
     @SerialName("supportEmptyStrings") val supportEmptyStrings: Boolean = false,
     @SerialName("resourcesStructure") val resourcesStructure: ResourcesStructure = ResourcesStructure.ANDROID,
     @SerialName("escapeQuotes") val escapeQuotes: Boolean = true,
+    @SerialName("keyColumn") val keyColumn: String = "key_android",
 )

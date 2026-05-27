@@ -18,7 +18,7 @@ data class Localization(val resources: List<Resource>) {
             // looking for valid column IDs (section column, android key column and supported languages keys)
             val validColumnIds = response.values[0].mapIndexed { index, name ->
                 if (name.contains("section", ignoreCase = true) ||
-                    name.contains("android", ignoreCase = true) ||
+                    name == configuration.keyColumn ||
                     configuration.languageMapping.keys.contains(name)) {
                     if (name.contains("section", ignoreCase = true)) {
                         sectionIndex = index
@@ -69,9 +69,17 @@ data class Localization(val resources: List<Resource>) {
                 // iterating through all languages (columns with values)
                 (filteredValues[0] as XmlRow.Header).cells
                     .drop(if (sectionIndex == null) 1 else 2) // drop key column and section column if exists
-                    .map { configuration.languageMapping[it] } // get the suffix from mapping based on column key
-                    .mapIndexed { index, suffix ->
-                        // now we have index for particular language and its suffix
+                    .mapIndexedNotNull { valueIndex, name ->
+                        // keep only real languages (present in mapping), dropping any other column;
+                        // valueIndex preserves the column position so the value lookup stays aligned
+                        if (configuration.languageMapping.containsKey(name)) {
+                            valueIndex to configuration.languageMapping[name]
+                        } else {
+                            null
+                        }
+                    }
+                    .map { (valueIndex, suffix) ->
+                        // now we have the value offset for a particular language and its suffix
                         val entries = mutableListOf<Resource.Entry>()
 
                         // starting to accumulate quantities for plural, reset to null if the next row is another plural or key
@@ -82,7 +90,7 @@ data class Localization(val resources: List<Resource>) {
                             if (row is XmlRow.Key) {
                                 // if this is a key row
                                 val key = row.cells[0] // take its key
-                                val value = row.cells.getOrNull(index + 1)
+                                val value = row.cells.getOrNull(valueIndex + 1)
                                     ?: "" // take its value for this language (+1 due to key)
                                 if (key.contains("##")) {
                                     // if this is a plural string (contains "##")
